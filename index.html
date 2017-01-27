@@ -68,12 +68,14 @@ body {
   <option value='CPV-J'>CPV-J</option>
 </select>
 
-<svg id='vis' width='480' height='480'></svg>
+<div>
+  <svg id='vis' width='480' height='480'></svg>
+</div>
 
-<!-- <div style='width: 1920px; height: 1080px; background:#000; position: relative;'>
-  <img style='position: absolute' src='app.png' width='1920' height='1080' />
-  <svg style='position: absolute' id='img' width='1920' height='1080'></svg>
-</div> -->
+<div style='width: 960; height: 540; background:#000; position: relative;'>
+  <img style='position: absolute' src='app.png' width='960' height='540' />
+  <svg style='position: absolute' id='img' width='960' height='540'></svg>
+</div>
 
 <script>
 
@@ -229,8 +231,20 @@ function drawChart (matrix) {
 
 function drawPointMap (mouse, eye) {
   var svg = d3.select('#img')
+  svg.selectAll('*').remove() // Temp fix
   var eyeG = svg.append('g')
   var mouseG = svg.append('g')
+
+  var width = +svg.attr('width')
+  var height = +svg.attr('height')
+
+  var xScale = d3.scaleLinear()
+    .domain([0, 1920])
+    .range([0, width])
+
+  var yScale = d3.scaleLinear()
+    .domain([0, 1080])
+    .range([0, height])
 
   eyeG.selectAll('circle')
     .data(eye).enter().append('circle')
@@ -238,10 +252,10 @@ function drawPointMap (mouse, eye) {
       .attr('fill', 'green')
       .attr('fill-opacity', 0.05)
       .attr('cx', function (d) {
-        return d.x === '-nan(ind)' ? -100 : d.x
+        return d.x === '-nan(ind)' ? -100 : xScale(d.x)
       })
       .attr('cy', function (d) {
-        return d.y === '-nan(ind)' ? -100 : d.y
+        return d.y === '-nan(ind)' ? -100 : yScale(d.y)
       });
 
   mouseG.selectAll('circle')
@@ -249,8 +263,8 @@ function drawPointMap (mouse, eye) {
       .attr('r', 5)
       .attr('fill', 'blue')
       .attr('fill-opacity', 0.05)
-      .attr('cx', function (d) { return d.x })
-      .attr('cy', function (d) { return d.y });
+      .attr('cx', function (d) { return xScale(d.x) })
+      .attr('cy', function (d) { return yScale(d.y) });
 }
 
 function loadData (value) {
