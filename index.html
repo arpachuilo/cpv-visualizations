@@ -18,16 +18,71 @@ body {
   fill-opacity: 0.67;
 }
 
+.key {
+  display: inline-block;
+  margin-left: 8px;
+  margin-right: 1px;
+  width: 1em;
+  height: 1em;
+}
+
+.key.overviewHist {
+  background-color: #000000;
+}
+
+.key.detailHist {
+  background-color: #FFDD89;
+}
+
+.key.graph {
+  background-color: #00CBDE;
+}
+
+.key.table {
+  background-color: #F26223;
+}
+
+.key.offices {
+  background-color: #629926;
+}
+
 </style>
 
-<svg id='vis' width='960' height='960'></svg>
+<h3>Legend</h3>
+<div class='key overviewHist'></div><span>Overview Histogram</span>
+<div class='key detailHist'></div><span>Detail Histogram</span>
+<div class='key graph'></div><span>Graph</span>
+<div class='key table'></div><span>Table</span>
+<div class='key offices'></div><span>Office View</span>
 
-<div style='width: 1920px; height: 1080px; background:#000; position: relative;'>
+<h3>Pick Dataset</h3>
+<select id='dataset' onchange='onDatasetChange()'>
+  <option value='CPV-A'>CPV-A</option>
+  <option value='CPV-B'>CPV-B</option>
+  <option value='CPV-C'>CPV-C</option>
+  <option value='CPV-E'>CPV-E</option>
+  <option value='CPV-F'>CPV-F</option>
+  <option value='CPV-G'>CPV-G</option>
+  <option value='CPV-H'>CPV-H</option>
+  <option value='CPV-I'>CPV-I</option>
+  <option value='CPV-J'>CPV-J</option>
+</select>
+
+<svg id='vis' width='480' height='480'></svg>
+
+<!-- <div style='width: 1920px; height: 1080px; background:#000; position: relative;'>
   <img style='position: absolute' src='app.png' width='1920' height='1080' />
   <svg style='position: absolute' id='img' width='1920' height='1080'></svg>
-</div>
+</div> -->
 
 <script>
+
+// NOTE: Time / Data controls - Update to react based app
+
+function onDatasetChange () {
+  var value = document.getElementById('dataset').value;
+  loadData(value)
+}
 
 function flattenData (data) {
   var flat = []
@@ -93,18 +148,25 @@ function convertDataForAOI (data) {
         previousTime = data[i].time
       }
       if (previousId !== data[i].id) {
-        fromIndex = +keys[subKeys[previousId]]
-        toIndex = +keys[subKeys[data[i].id]]
+        var fromIndex = +keys[subKeys[previousId]]
+        var toIndex = +keys[subKeys[data[i].id]]
 
-        timeLapsed = data[i].time - previousTime
+        if (fromIndex !== toIndex) {
+          timeLapsed = data[i].time - previousTime
 
-        converted[fromIndex][toIndex] += timeLapsed
-        previousId = data[i].id
-        previousTime = data[i].time
+          converted[fromIndex][toIndex] += timeLapsed
+          previousId = data[i].id
+          previousTime = data[i].time
+        }
       }
     }
   }
-
+  for (let i = 0; i < converted.length; i++) {
+    for (let j = 0; j < converted[i].length; j++) {
+      converted[i][j] = converted[i][j] / 1000
+    }
+  }
+  console.table(converted)
   return converted;
 }
 
@@ -114,7 +176,7 @@ function drawChart (matrix) {
       height = +svg.attr('height'),
       outerRadius = Math.min(width, height) * 0.5 - 40,
       innerRadius = outerRadius - 30;
-
+  svg.selectAll('*').remove() // Doing this as temp patch job
   var formatValue = d3.formatPrefix(',.0', 1e3);
 
   var chord = d3.chord()
@@ -191,13 +253,18 @@ function drawPointMap (mouse, eye) {
       .attr('cy', function (d) { return d.y });
 }
 
-d3.text('CPV-A.csv', function(text) {
-  var eye = d3.csvParse('status,x,y,time\n' + text)
-  d3.json('CPV-A.json', function (mouse) {
-    let rawMouse = flattenData(mouse)
-    drawChart(convertDataForAOI(rawMouse))
-    drawPointMap(rawMouse, eye)
+function loadData (value) {
+  var path = 'data/' + value
+  d3.text(path + '.csv', function(text) {
+    var eye = d3.csvParse('status,x,y,time\n' + text)
+    d3.json(path + '.json', function (mouse) {
+      let rawMouse = flattenData(mouse)
+      drawChart(convertDataForAOI(rawMouse))
+      // drawPointMap(rawMouse, eye)
+    })
   })
-})
+}
+
+loadData('CPV-A')
 
 </script>
