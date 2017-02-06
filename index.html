@@ -3,6 +3,10 @@
   <meta charset='utf-8'>
   <script src='https://d3js.org/d3.v4.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
+  <script src='./scripts/util.js'></script>
+  <script src='./scripts/HeatPointChart.js'></script>
+
+  <link rel='stylesheet' href='style.css'>
 </head>
 <style>
 
@@ -60,6 +64,7 @@ body {
   <option value='CPV-A'>CPV-A</option>
   <option value='CPV-B'>CPV-B</option>
   <option value='CPV-C'>CPV-C</option>
+  <option value='CPV-D'>CPV-D</option>
   <option value='CPV-E'>CPV-E</option>
   <option value='CPV-F'>CPV-F</option>
   <option value='CPV-G'>CPV-G</option>
@@ -72,6 +77,9 @@ body {
   <svg id='vis' width='480' height='480'></svg>
 </div>
 
+<span>Eye Data</span><input type='checkbox' id='eye_checkbox' checked onchange='updateHeatPointView()'>
+<span>Mouse Data</span><input type='checkbox' id='mouse_checkbox' checked onchange='updateHeatPointView()'>
+
 <div style='width: 960; height: 540; background:#000; position: relative;'>
   <img style='position: absolute' src='app.png' width='960' height='540' />
   <svg style='position: absolute' id='img' width='960' height='540'></svg>
@@ -79,97 +87,42 @@ body {
 
 <script>
 
-// NOTE: Time / Data controls - Update to react based app
+var heatpoints = HeatPointChart(d3.select('#img'))
+  .width(960)
+  .height(540)
+var viewableEyeData = []
+var viewableMouseData = []
+var loadedEyeData = []
+var loadedMouseData = []
 
 function onDatasetChange () {
-  var value = document.getElementById('dataset').value;
+  var value = document.getElementById('dataset').value
   loadData(value)
 }
 
-function flattenData (data) {
-  var flat = []
-
-  Object.keys(data[0]).forEach(function (key) {
-    if (key !== 'id') {
-      data[0][key].forEach(function (d) {
-        d.id = key
-        d.time = moment(d.date)
-        flat.push(d)
-      })
-    }
-  })
-
-  flat.sort(function (a, b) {
-    return a.time - b.time
-  })
-
-  return flat;
+function updateHeatPointView () {
+  setViewable()
+  heatpoints
+    .eyeData(viewableEyeData)
+    .mouseData(viewableMouseData)
+    .update()
 }
 
-function convertDataForAOI (data) {
-  var keys = {
-    'overviewHist': 0,
-    'detailHist': 1,
-    'graph': 2,
-    'table': 3,
-    'offices': 4
+function setViewable () {
+  var eye = document.getElementById('eye_checkbox').checked
+  var mouse = document.getElementById('mouse_checkbox').checked
+  console
+  if (eye) {
+    viewableEyeData = loadedEyeData
+  } else {
+    viewableEyeData = []
   }
 
-  var subKeys = {
-    'officesCleared': 'offices',
-    'officeMouseEnter': 'offices',
-    'officeClicked': 'offices',
-    'sliderMoved': 'offices',
-    'accessTimeClicked': 'table',
-    'histogramBrushStart': 'overviewHist',
-    'histogramBrushEnd': 'overviewHist',
-    'headerClicked': 'table',
-    'rowClicked': 'table',
-    'rowMouseOver': 'table',
-    'tableToggleSelected': 'table',
-    'pageChange': 'table',
-    'histogramBarClick': 'detailHist',
-    'histogramBarMouseEnter': 'detailHist',
-    'graphNodeMouseEnter': 'graph'
+  if (mouse) {
+    viewableMouseData = loadedMouseData
+  } else {
+    viewableMouseData = []
   }
-
-  var converted = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-  ];
-
-  var previousId = ''
-  var previousTime = ''
-  for (let i = 0; i < data.length; i++) {
-    if (data[i].id !== 'mouseEnter') {
-      if (previousId === '' || previousTime === '') {
-        previousId = data[i].id
-        previousTime = data[i].time
-      }
-      if (previousId !== data[i].id) {
-        var fromIndex = +keys[subKeys[previousId]]
-        var toIndex = +keys[subKeys[data[i].id]]
-
-        if (fromIndex !== toIndex) {
-          timeLapsed = data[i].time - previousTime
-
-          converted[fromIndex][toIndex] += timeLapsed
-          previousId = data[i].id
-          previousTime = data[i].time
-        }
-      }
-    }
-  }
-  for (let i = 0; i < converted.length; i++) {
-    for (let j = 0; j < converted[i].length; j++) {
-      converted[i][j] = converted[i][j] / 1000
-    }
-  }
-  console.table(converted)
-  return converted;
 }
 
 function drawChart (matrix) {
@@ -229,52 +182,15 @@ function drawChart (matrix) {
   }
 }
 
-function drawPointMap (mouse, eye) {
-  var svg = d3.select('#img')
-  svg.selectAll('*').remove() // Temp fix
-  var eyeG = svg.append('g')
-  var mouseG = svg.append('g')
-
-  var width = +svg.attr('width')
-  var height = +svg.attr('height')
-
-  var xScale = d3.scaleLinear()
-    .domain([0, 1920])
-    .range([0, width])
-
-  var yScale = d3.scaleLinear()
-    .domain([0, 1080])
-    .range([0, height])
-
-  eyeG.selectAll('circle')
-    .data(eye).enter().append('circle')
-      .attr('r', 5)
-      .attr('fill', 'green')
-      .attr('fill-opacity', 0.05)
-      .attr('cx', function (d) {
-        return d.x === '-nan(ind)' ? -100 : xScale(d.x)
-      })
-      .attr('cy', function (d) {
-        return d.y === '-nan(ind)' ? -100 : yScale(d.y)
-      });
-
-  mouseG.selectAll('circle')
-    .data(mouse).enter().append('circle')
-      .attr('r', 5)
-      .attr('fill', 'blue')
-      .attr('fill-opacity', 0.05)
-      .attr('cx', function (d) { return xScale(d.x) })
-      .attr('cy', function (d) { return yScale(d.y) });
-}
-
 function loadData (value) {
   var path = 'data/' + value
   d3.text(path + '.csv', function(text) {
-    var eye = d3.csvParse('status,x,y,time\n' + text)
+    loadedEyeData = d3.csvParse('status,x,y,time\n' + text)
     d3.json(path + '.json', function (mouse) {
-      let rawMouse = flattenData(mouse)
-      drawChart(convertDataForAOI(rawMouse))
-      // drawPointMap(rawMouse, eye)
+      loadedMouseData = flattenData(mouse)
+
+      drawChart(convertDataForAOI(loadedMouseData))
+      updateHeatPointView()
     })
   })
 }

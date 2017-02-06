@@ -1,0 +1,9 @@
+.mouse circle {
+  fill: yellow;
+  fill-opacity: 0.05;
+}
+
+.eye circle {
+  fill: red;
+  fill-opacity: 0.05;
+}
