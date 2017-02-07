@@ -3,198 +3,98 @@
   <meta charset='utf-8'>
   <script src='https://d3js.org/d3.v4.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
+  <script src="http://www.w3schools.com/lib/w3data.js"></script>
   <script src='./scripts/util.js'></script>
   <script src='./scripts/HeatPointChart.js'></script>
+  <script src='./scripts/StackedBarChart.js'></script>
+  <script src='./scripts/CircularAOI.js'></script>
+  <script src='./scripts/CircularDataCoverage.js'></script>
 
   <link rel='stylesheet' href='style.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
 </head>
-<style>
+<body>
+  <span>Dataset: </span>
+  <select id='dataset' onchange='onDatasetChange()'>
+    <option value='CPV-A'>CPV-A</option>
+    <option value='CPV-B'>CPV-B</option>
+    <option value='CPV-C'>CPV-C</option>
+    <option value='CPV-D'>CPV-D</option>
+    <option value='CPV-E'>CPV-E</option>
+    <option value='CPV-F'>CPV-F</option>
+    <option value='CPV-G'>CPV-G</option>
+    <option value='CPV-H'>CPV-H</option>
+    <option value='CPV-I'>CPV-I</option>
+    <option value='CPV-J'>CPV-J</option>
+  </select>
 
-body {
-  font: 10px sans-serif;
-}
+  <div class='row'>
+    <div class='row'>
+      <div class='two columns'>
+        <div class='key overviewHist'></div><span>Overview Histogram</span></br>
+        <div class='key detailHist'></div><span>Detail Histogram</span></br>
+        <div class='key graph'></div><span>Graph</span></br>
+        <div class='key table'></div><span>Table</span></br>
+        <div class='key offices'></div><span>Office View</span></br>
+      </div>
+      <div class='five columns'>
+        <svg id='aoi' width='480' height='480'></svg>
+      </div>
+      <div class='five columns'>
+        <svg id='datacoverage' width='480' height='480'></svg>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='twelve columns' id='timeControl'></div>
+    </div>
+  </div>
 
-.group-tick line {
-  stroke: #000;
-}
+  <div class='row' w3-include-html='heatmap.html'></div>
 
-.ribbons {
-  fill-opacity: 0.67;
-}
+  <script>
+  var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
 
-.key {
-  display: inline-block;
-  margin-left: 8px;
-  margin-right: 1px;
-  width: 1em;
-  height: 1em;
-}
-
-.key.overviewHist {
-  background-color: #000000;
-}
-
-.key.detailHist {
-  background-color: #FFDD89;
-}
-
-.key.graph {
-  background-color: #00CBDE;
-}
-
-.key.table {
-  background-color: #F26223;
-}
-
-.key.offices {
-  background-color: #629926;
-}
-
-</style>
-
-<h3>Legend</h3>
-<div class='key overviewHist'></div><span>Overview Histogram</span>
-<div class='key detailHist'></div><span>Detail Histogram</span>
-<div class='key graph'></div><span>Graph</span>
-<div class='key table'></div><span>Table</span>
-<div class='key offices'></div><span>Office View</span>
-
-<h3>Pick Dataset</h3>
-<select id='dataset' onchange='onDatasetChange()'>
-  <option value='CPV-A'>CPV-A</option>
-  <option value='CPV-B'>CPV-B</option>
-  <option value='CPV-C'>CPV-C</option>
-  <option value='CPV-D'>CPV-D</option>
-  <option value='CPV-E'>CPV-E</option>
-  <option value='CPV-F'>CPV-F</option>
-  <option value='CPV-G'>CPV-G</option>
-  <option value='CPV-H'>CPV-H</option>
-  <option value='CPV-I'>CPV-I</option>
-  <option value='CPV-J'>CPV-J</option>
-</select>
-
-<div>
-  <svg id='vis' width='480' height='480'></svg>
-</div>
-
-<span>Eye Data</span><input type='checkbox' id='eye_checkbox' checked onchange='updateHeatPointView()'>
-<span>Mouse Data</span><input type='checkbox' id='mouse_checkbox' checked onchange='updateHeatPointView()'>
-
-<div style='width: 960; height: 540; background:#000; position: relative;'>
-  <img style='position: absolute' src='app.png' width='960' height='540' />
-  <svg style='position: absolute' id='img' width='960' height='540'></svg>
-</div>
-
-<script>
-
-var heatpoints = HeatPointChart(d3.select('#img'))
-  .width(960)
-  .height(540)
-var viewableEyeData = []
-var viewableMouseData = []
-var loadedEyeData = []
-var loadedMouseData = []
-
-function onDatasetChange () {
-  var value = document.getElementById('dataset').value
-  loadData(value)
-}
-
-function updateHeatPointView () {
-  setViewable()
-  heatpoints
-    .eyeData(viewableEyeData)
-    .mouseData(viewableMouseData)
-    .update()
-}
-
-function setViewable () {
-  var eye = document.getElementById('eye_checkbox').checked
-  var mouse = document.getElementById('mouse_checkbox').checked
-  console
-  if (eye) {
-    viewableEyeData = loadedEyeData
-  } else {
-    viewableEyeData = []
-  }
-
-  if (mouse) {
-    viewableMouseData = loadedMouseData
-  } else {
-    viewableMouseData = []
-  }
-}
-
-function drawChart (matrix) {
-  var svg = d3.select('#vis'),
-      width = +svg.attr('width'),
-      height = +svg.attr('height'),
-      outerRadius = Math.min(width, height) * 0.5 - 40,
-      innerRadius = outerRadius - 30;
-  svg.selectAll('*').remove() // Doing this as temp patch job
-  var formatValue = d3.formatPrefix(',.0', 1e3);
-
-  var chord = d3.chord()
-      .padAngle(0.05)
-      .sortSubgroups(d3.descending);
-
-  var arc = d3.arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius);
-
-  var ribbon = d3.ribbon()
-      .radius(innerRadius);
-
-  var color = d3.scaleOrdinal()
-      .domain(d3.range(5))
-      .range(['#000000', '#FFDD89', '#00CBDE', '#F26223', '#629926']);
-
-  var g = svg.append('g')
-      .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-      .datum(chord(matrix));
-
-  var group = g.append('g')
-      .attr('class', 'groups')
-    .selectAll('g')
-    .data(function(chords) { return chords.groups; })
-    .enter().append('g');
-
-  group.append('path')
-      .style('fill', function(d) { return color(d.index); })
-      .style('stroke', function(d) { return d3.rgb(color(d.index)).darker(); })
-      .attr('d', arc);
-
-  g.append('g')
-      .attr('class', 'ribbons')
-    .selectAll('path')
-    .data(function(chords) { return chords; })
-    .enter().append('path')
-      .attr('d', ribbon)
-      .style('fill', function(d) { return color(d.target.index); })
-      .style('stroke', function(d) { return d3.rgb(color(d.target.index)).darker(); });
-
-  // Returns an array of tick angles and values for a given group and step.
-  function groupTicks(d, step) {
-    var k = (d.endAngle - d.startAngle) / d.value;
-    return d3.range(0, d.value, step).map(function(value) {
-      return {value: value, angle: value * k + d.startAngle};
-    });
-  }
-}
-
-function loadData (value) {
-  var path = 'data/' + value
-  d3.text(path + '.csv', function(text) {
-    loadedEyeData = d3.csvParse('status,x,y,time\n' + text)
-    d3.json(path + '.json', function (mouse) {
-      loadedMouseData = flattenData(mouse)
-
-      drawChart(convertDataForAOI(loadedMouseData))
-      updateHeatPointView()
+  var bounds = false
+  var stackedChart = StackedBarChart(d3.select('#timeControl'))
+    .keys(classKeys)
+    .onBrushDrag(function (event, extent) {
+      bounds = extent
+      drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
+      drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
     })
+
+  var loadedEyeData = []
+  var loadedMouseData = []
+
+  function onDatasetChange () {
+    var value = document.getElementById('dataset').value
+    loadData(value)
+  }
+
+  document.addEventListener('data-loaded', function () {
+    stackedChart
+      .data(timeBinData(loadedMouseData, 90))
+      .update()
+    drawCircularAOI(convertDataForAOI(loadedMouseData), classKeys)
+    drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
   })
-}
 
-loadData('CPV-A')
+  function loadData (value) {
+    var path = 'data/' + value
+    d3.text(path + '.csv', function(text) {
+      loadedEyeData = d3.csvParse('status,x,y,time\n' + text)
+      d3.json(path + '.json', function (mouse) {
+        loadedMouseData = flattenData(mouse)
 
-</script>
+        var event = new Event('data-loaded')
+        document.dispatchEvent(event)
+      })
+    })
+  }
+
+  loadData('CPV-A')
+
+  // w3IncludeHTML()
+  </script>
+</body>

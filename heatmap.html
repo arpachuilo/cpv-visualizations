@@ -1,0 +1,48 @@
+<body>
+  <div class='row'>
+    <span>Eye Data</span><input type='checkbox' id='eye_checkbox' checked onchange='updateHeatPointView()'>
+    <span>Mouse Data</span><input type='checkbox' id='mouse_checkbox' checked onchange='updateHeatPointView()'>
+
+    <div style='width: 960; height: 540; background:#000; position: relative;'>
+      <img style='position: absolute' src='app.png' width='960' height='540' />
+      <svg style='position: absolute' id='img' width='960' height='540'></svg>
+    </div>
+  </div>
+
+  <script>
+    var heatpoints = HeatPointChart(d3.select('#img'))
+      .width(960)
+      .height(540)
+
+    var viewableEyeData = []
+    var viewableMouseData = []
+
+    document.addEventListener('data-loaded', function () {
+      updateHeatPointView()
+    })
+
+    function updateHeatPointView () {
+      setViewable()
+      heatpoints
+        .eyeData(viewableEyeData)
+        .mouseData(viewableMouseData)
+        .update()
+    }
+
+    function setViewable () {
+      var eye = document.getElementById('eye_checkbox').checked
+      var mouse = document.getElementById('mouse_checkbox').checked
+      if (eye) {
+        viewableEyeData = loadedEyeData
+      } else {
+        viewableEyeData = []
+      }
+
+      if (mouse) {
+        viewableMouseData = loadedMouseData
+      } else {
+        viewableMouseData = []
+      }
+    }
+  </script>
+</body>

@@ -1,3 +1,60 @@
+:root {
+  --oHist-color: #66c2a5;
+  --dHist-color: #fc8d62;
+  --graph-color: #8da0cb;
+  --table-color: #a6d854;
+  --offices-color: #e78ac3;
+  --stroke-color: #000000;
+  --stroke-opacity: 0.1;
+}
+
+.overviewHist, .overviewHist * {
+  fill: var(--oHist-color);
+  background-color: var(--oHist-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.detailHist, .detailHist * {
+  fill: var(--dHist-color);
+  background-color: var(--dHist-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.graph, .graph * {
+  fill: var(--graph-color);
+  background-color: var(--graph-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.table, .table * {
+  fill: var(--table-color);
+  background-color: var(--table-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.offices, .offices * {
+  fill: var(--offices-color);
+  background-color: var(--offices-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.ribbons {
+  fill-opacity: 0.67;
+}
+
+.key {
+  display: inline-block;
+  margin-left: 8px;
+  margin-right: 1px;
+  width: 1em;
+  height: 1em;
+}
+
 .mouse circle {
   fill: yellow;
   fill-opacity: 0.05;
