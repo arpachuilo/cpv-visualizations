@@ -4,6 +4,46 @@ function drawDataCoverage (matrix) {
   var height = +svg.attr('height')
   var outerRadius = Math.min(width, height) * 0.5 - 40
   var innerRadius = outerRadius - 30
+
+  var arcTooltipFunction = function (d) {
+    var filter = matrix.filters[d.index]
+    var text = ''
+    _.forOwn(filter, function(value, key) {
+      text += '<label>' + key + ': ' + '</label>'
+
+      if (key === 'AccessTime') {
+        text += value[0] + ' to ' + value[1]
+      } else {
+        value.forEach(function(v, i) {
+          text += v
+          if (i !== value.length - 1) {
+            text += '</br>'
+          }
+        })
+      }
+      text += '</br>'
+    })
+
+    return text === '' ? 'No Filters' : text
+  }
+
+  var chordTooltipFunction = function (d) {
+    var text = d.source.value + ' to ' + d.target.value
+    return text
+  }
+
+  var arcTip = new Tooltip()
+    .attr('className', 'tooltip')
+    .offset([-8, 0])
+    .useMouseCoordinates(true)
+    .html(arcTooltipFunction)
+
+  var chordTip = new Tooltip()
+    .attr('className', 'tooltip')
+    .offset([-8, 0])
+    .useMouseCoordinates(true)
+    .html(chordTooltipFunction)
+
   svg.selectAll('*').remove() // Doing this as temp patch job
 
   var chord = d3.chord()
@@ -18,9 +58,9 @@ function drawDataCoverage (matrix) {
       .radius(innerRadius);
 
   var max = 0
-  for (var i = 0; i < matrix.length; i++) {
-    for (var j = 0; j < matrix.length; j++) {
-      if (matrix[i][j] > max) max = matrix[i][j]
+  for (var i = 0; i < matrix.values.length; i++) {
+    for (var j = 0; j < matrix.values.length; j++) {
+      if (matrix.values[i][j] > max) max = matrix.values[i][j]
     }
   }
 
@@ -30,7 +70,7 @@ function drawDataCoverage (matrix) {
 
   var g = svg.append('g')
       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-      .datum(chord(matrix))
+      .datum(chord(matrix.values))
 
   var group = g.append('g')
       .attr('class', 'groups')
@@ -43,11 +83,15 @@ function drawDataCoverage (matrix) {
       .attr('fill', function(d) { return color(d.value); })
       .attr('stroke', function(d) { return d3.rgb(color(d.value)).darker(); })
       .attr('d', arc)
-    .append('svg:title')
-      .text(function (d) {
-        return d.value
+      .on('mouseenter', function (d) {
+        arcTip.show(d3.event, d)
       })
-
+      .on('mousemove', function (d) {
+        arcTip.show(d3.event, d)
+      })
+      .on('mouseout', function (d) {
+        arcTip.hide(d3.event, d)
+      })
 
   g.append('g')
       .attr('class', 'ribbons')
@@ -57,8 +101,13 @@ function drawDataCoverage (matrix) {
       .attr('d', ribbon)
       .attr('fill', function(d) { return color(d.target.value); })
       .attr('stroke', function(d) { return d3.rgb(color(d.target.value)).darker(); })
-    .append('svg:title')
-      .text(function (d) {
-        return d.source.value + ' to ' + d.target.value
+      .on('mouseenter', function (d) {
+        chordTip.show(d3.event, d)
+      })
+      .on('mousemove', function (d) {
+        chordTip.show(d3.event, d)
+      })
+      .on('mouseout', function (d) {
+        chordTip.hide(d3.event, d)
       })
 }

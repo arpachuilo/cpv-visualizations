@@ -1,3 +1,60 @@
+function functor (f) {
+  for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key]
+  }
+
+  return typeof f === 'function' ? f.apply(undefined, args) : f
+}
+
+// Cross browser helpers
+function getWidth () {
+  if (self.innerWidth) {
+    return self.innerWidth
+  }
+
+  if (document.documentElement && document.documentElement.clientWidth) {
+    return document.documentElement.clientWidth
+  }
+
+  if (document.body) {
+    return document.body.clientWidth
+  }
+}
+
+function getHeight () {
+  if (self.innerHeight) {
+    return self.innerHeight
+  }
+
+  if (document.documentElement && document.documentElement.clientHeight) {
+    return document.documentElement.clientHeight
+  }
+
+  if (document.body) {
+    return document.body.clientHeight
+  }
+}
+
+function scrollTop () {
+  if (document.documentElement && document.documentElement.scrollTop) {
+    return document.documentElement.scrollTop
+  }
+
+  if (document.body) {
+    return document.body.scrollTop
+  }
+}
+
+function scrollLeft () {
+  if (document.documentElement && document.documentElement.scrollLeft) {
+    return document.documentElement.scrollLeft
+  }
+
+  if (document.body) {
+    return document.body.scrollLeft
+  }
+}
+
 function flattenData (data) {
   var flat = []
 
@@ -117,9 +174,10 @@ function convertDataForCoverage (data, bounds = false) {
 
   var matrix = []
   for (var i = 0; i < filters.length; i++) {
-    matrix.push(
-      Array.apply(null, Array(filters.length)).map(Number.prototype.valueOf, 0)
-    )
+    matrix.push([])
+    for (var j = 0; j < filters.length; j++) {
+      matrix[i].push(0)
+    }
   }
 
   var previousFilter = null
@@ -135,20 +193,16 @@ function convertDataForCoverage (data, bounds = false) {
 
       timeLapsed = data[i].time - previousTime
 
-      matrix[fromIndex][toIndex] += timeLapsed
+      matrix[fromIndex][toIndex] += timeLapsed / 1000
       previousFilter = data[i].filters
       previousTime = data[i].time
     }
   }
 
-  console.log(matrix)
-  // Convert to seconds
-  for (let i = 0; i < matrix.length; i++) {
-    for (let j = 0; j < matrix[i].length; j++) {
-      matrix[i][j] = matrix[i][j] / 1000
-    }
+  return {
+    values: matrix,
+    filters: filters
   }
-  return matrix
 }
 
 function convertDataForAOI (data, bounds = false) {
@@ -191,7 +245,7 @@ function convertDataForAOI (data, bounds = false) {
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
-  ];
+  ]
 
   var previousId = null
   var previousTime = null
@@ -201,22 +255,15 @@ function convertDataForAOI (data, bounds = false) {
       previousTime = data[i].time
     }
     if (previousId !== data[i].id || i === data.length - 1) {
-      var fromIndex = +keys[subKeys[previousId]]
-      var toIndex = +keys[subKeys[data[i].id]]
-
       timeLapsed = data[i].time - previousTime
 
-      matrix[fromIndex][toIndex] += timeLapsed
+      var fromIndex = +keys[subKeys[previousId]]
+      var toIndex = +keys[subKeys[data[i].id]]
+      matrix[fromIndex][toIndex] += timeLapsed / 1000
       previousId = data[i].id
       previousTime = data[i].time
     }
   }
 
-  // Convert to seconds
-  for (let i = 0; i < matrix.length; i++) {
-    for (let j = 0; j < matrix[i].length; j++) {
-      matrix[i][j] = matrix[i][j] / 1000
-    }
-  }
   return matrix
 }

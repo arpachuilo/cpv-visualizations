@@ -1,8 +1,5 @@
 function HeatPointChart(selection) {
-  // <div style='width: 960; height: 540; background:#000; position: relative;'>
-  //   <img style='position: absolute' src='app.png' width='960' height='540' />
-  //   <svg style='position: absolute' id='img' width='960' height='540'></svg>
-  // </div>
+
   // default values
   var width = 960
   var height = 540
@@ -14,7 +11,6 @@ function HeatPointChart(selection) {
   // init chart here
   var svg, gEye, gMouse
   var xScale, yScale
-
   selection.each(function (d) {
     //Select the svg element, if it exists
     svg = d3.select(this).selectAll('svg').data([d])

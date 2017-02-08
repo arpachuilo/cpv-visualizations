@@ -4,15 +4,20 @@
   <script src='https://d3js.org/d3.v4.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
-  <script src="http://www.w3schools.com/lib/w3data.js"></script>
+
   <script src='./scripts/util.js'></script>
+  <script src='./scripts/Tooltip.js'></script>
   <script src='./scripts/HeatPointChart.js'></script>
   <script src='./scripts/StackedBarChart.js'></script>
   <script src='./scripts/CircularAOI.js'></script>
   <script src='./scripts/CircularDataCoverage.js'></script>
 
-  <link rel='stylesheet' href='style.css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
+  <link rel='stylesheet' href='style.css'>
+
+  <!-- <link rel='import' href='heatmap.html'> -->
+
 </head>
 <body>
   <span>Dataset: </span>
@@ -47,12 +52,26 @@
     </div>
     <div class='row'>
       <div class='twelve columns' id='timeControl'></div>
+      <button onclick='removeBrush()'>Clear Brush</button>
     </div>
   </div>
 
-  <div class='row' w3-include-html='heatmap.html'></div>
+  <!-- <div id='heatmap'></div> -->
 
   <script>
+
+  // function insertHeatmap () {
+  //   var link = document.querySelector('link[rel="import"]')
+  //   var content = link.import
+  //
+  //   var el = content.querySelector('.heatmap')
+  //
+  //   document.getElementById('heatmap').appendChild(el.cloneNode(true))
+  // }
+
+  // insertHeatmap()
+
+
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
 
   var bounds = false
@@ -67,17 +86,25 @@
   var loadedEyeData = []
   var loadedMouseData = []
 
+  function removeBrush () {
+    bounds = false
+    drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
+    drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
+    stackedChart.clearBrush()
+  }
+
   function onDatasetChange () {
     var value = document.getElementById('dataset').value
     loadData(value)
   }
 
   document.addEventListener('data-loaded', function () {
+    bounds = false
     stackedChart
       .data(timeBinData(loadedMouseData, 90))
       .update()
     drawCircularAOI(convertDataForAOI(loadedMouseData), classKeys)
-    drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
+    drawDataCoverage(convertDataForCoverage(loadedMouseData))
   })
 
   function loadData (value) {
@@ -94,7 +121,5 @@
   }
 
   loadData('CPV-A')
-
-  // w3IncludeHTML()
   </script>
 </body>

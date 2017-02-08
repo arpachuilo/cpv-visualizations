@@ -15,14 +15,18 @@ function StackedBarChart(selection, brushable = true) {
   var onBrushEnd = function (d) {}
 
   // init chart here
-  var svg, gChart, gXaxis, gYaxis, gBrush
+  var svg, gChart, gXaxis, gYaxis, gBrush, brush
   var chartWidth, chartHeight
+  var x, y
   selection.each(function (d) {
     //Select the svg element, if it exists
     svg = d3.select(this).selectAll('svg').data([d])
 
     //Otherwise, create the skeletal chart
     var gEnter = svg.enter().append('svg')
+
+    x = d3.scaleTime()
+    y = d3.scaleLinear()
 
     gEnter
       .attr('width', width)
@@ -42,22 +46,42 @@ function StackedBarChart(selection, brushable = true) {
       gBrush = gEnter.append('g')
         .attr('class', 'brush')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+      brush = d3.brushX()
+        .on('start', function () {
+          if (d3.event.selection !== null) {
+            onBrushStart(d3.event, d3.event.selection.map(x.invert))
+          }
+        })
+        .on('brush', function () {
+          if (d3.event.selection !== null) {
+            onBrushDrag(d3.event, d3.event.selection.map(x.invert))
+          }
+        })
+        .on('end', function () {
+          if (d3.event.selection !== null) {
+            onBrushEnd(d3.event, d3.event.selection.map(x.invert))
+          }
+        })
     }
   })
 
   this.update = function () {
     gChart.selectAll('*').remove()
+    gXaxis.selectAll('*').remove()
+    gYaxis.selectAll('*').remove()
+
     chartWidth = width - margin.left - margin.right
     chartHeight = height - margin.bottom - margin.top
 
-    var x = d3.scaleTime()
+    x = x
       .domain([
         d3.min(data, function (d) { return d.startTime }),
         d3.max(data, function (d) { return d.endTime })
       ])
       .range([0, chartWidth])
 
-    var y = d3.scaleLinear()
+    y = y
       .domain([0, d3.max(data, function (d) { return d.total })])
       .range([chartHeight, 0])
 
@@ -83,18 +107,14 @@ function StackedBarChart(selection, brushable = true) {
 
     if (brushable) {
       gBrush
-        .call(d3.brushX()
-          .extent([[0, 0], [chartWidth, chartHeight]])
-          .on('start', function () {
-            onBrushStart(d3.event, d3.event.selection.map(x.invert))
-          })
-          .on('brush', function () {
-            onBrushDrag(d3.event, d3.event.selection.map(x.invert))
-          })
-          .on('end', function () {
-            onBrushEnd(d3.event, d3.event.selection.map(x.invert))
-          }))
+        .call(brush.extent([[0, 0], [chartWidth, chartHeight]]))
+        .call(brush.move, null)
     }
+  }
+
+  this.clearBrush = function () {
+    gBrush.call(brush.move, null)
+    return this
   }
 
   this.onBrushStart = function (_) {
