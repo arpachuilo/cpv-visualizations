@@ -2,7 +2,7 @@ function StackedBarChart(selection, brushable = true) {
   var data = []
   var keys = []
   var width = selection.node().offsetWidth
-  var height = 480
+  var height = 280
   var margin = {
     top: 0,
     left: 45,

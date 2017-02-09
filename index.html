@@ -38,16 +38,16 @@
   <div class='row'>
     <div class='row'>
       <div class='four columns'>
-        <h4 class='centered'>Area of Interest</h4>
-        <svg id='aoi' width='480' height='480'></svg>
+        <h5 class='centered'>Area of Interest</h5>
+        <svg id='aoi' height='480'></svg>
       </div>
       <div class='four columns'>
-        <h4 class='centered'>User Data Filters</h4>
-        <svg id='datacoverage' width='480' height='480'></svg>
+        <h5 class='centered'>User Data Filters</h5>
+        <svg id='datacoverage' height='480'></svg>
       </div>
       <div class='four columns'>
-        <h4 class='centered'>User Actions</h4>
-        <svg id='as' width='480' height='480'></svg>
+        <h5 class='centered'>User Actions</h5>
+        <svg id='as' height='480'></svg>
       </div>
     </div>
     <div class='row'>
@@ -111,12 +111,11 @@
   })
 
   function loadData (value) {
-    var path = 'data/' + value
-    d3.text(path + '.csv', function(text) {
-      loadedEyeData = d3.csvParse('status,x,y,time\n' + text)
-      d3.json(path + '.json', function (mouse) {
+    d3.text('data/converted-' + value + '.csv', function(text) {
+      loadedEyeData = d3.csvParse('status,x,y,time,aoi\n' + text)
+      d3.json('data/' + value + '.json', function (mouse) {
         loadedMouseData = flattenData(mouse)
-
+        // zipMouseEye(loadedMouseData, loadedEyeData)
         var event = new Event('data-loaded')
         document.dispatchEvent(event)
       })

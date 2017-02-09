@@ -1,10 +1,13 @@
+
 import matplotlib.path as mplPath
 import numpy as np
 import csv
+import sys
+import os.path
 
 # Load eye tracking data
 data = []
-with open('CPV-A.csv', 'rb') as file:
+with open(sys.argv[1], 'rb') as file:
     d = csv.reader(file, delimiter=',')
     for row in d:
         data.append(row)
@@ -61,15 +64,15 @@ for r in data:
         x = float(r[1])
         y = float(r[2])
     if dHistBB.contains_point((x, y)):
-        r.append('dHist')
+        r.append('detailHist')
     elif oHistBB.contains_point((x, y)):
-        r.append('oHist')
+        r.append('overviewHist')
     elif graphBB.contains_point((x, y)):
         r.append('graph')
     elif bntBB.contains_point((x, y)):
-        r.append('bnt')
+        r.append('offices')
     elif bntKeyBB.contains_point((x, y)):
-        r.append('bntKey')
+        r.append('officesKey')
     elif infoBB.contains_point((x, y)):
         r.append('info')
     elif tableBB.contains_point((x, y)):
@@ -78,6 +81,7 @@ for r in data:
         r.append('none')
 
 # Dump to new csv file
-with open('out.csv', 'wb') as file:
+filename = os.path.dirname(sys.argv[1]) + '/converted-' + os.path.basename(sys.argv[1])
+with open(filename, 'wb') as file:
     d = csv.writer(file)
     d.writerows(data)

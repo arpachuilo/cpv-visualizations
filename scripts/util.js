@@ -55,6 +55,46 @@ function scrollLeft () {
   }
 }
 
+// BOTH should be flat datasets
+function zipMouseEye (mouse, eye) {
+  // var subKeys = {
+  //   'officesCleared': 'offices',
+  //   'officeMouseEnter': 'offices',
+  //   'officeClicked': 'offices',
+  //   'sliderMoved': 'offices',
+  //   'accessTimeClicked': 'table',
+  //   'histogramBrushStart': 'overviewHist',
+  //   'histogramBrushEnd': 'overviewHist',
+  //   'headerClicked': 'table',
+  //   'rowClicked': 'table',
+  //   'rowMouseOver': 'table',
+  //   'tableToggleSelected': 'table',
+  //   'pageChange': 'table',
+  //   'histogramBarClick': 'detailHist',
+  //   'histogramBarMouseEnter': 'detailHist',
+  //   'graphNodeMouseEnter': 'graph'
+  // }
+  //
+  // for (var i = 0; i < mouse.length; i++) {
+  //   var mouseAOI = subKeys[mouse[i].id]
+  //   var mouseTime = mouse[i].time
+  //   for (var j = 0; j < eye.length; j++) {
+  //     // approx for now - within 100ms
+  //     if ((eye[i].aoi === mouseAOI) && (moment(eye[i].time + 100) > mouseTime) && (moment(eye[i].time) <= mouseTime)) {
+  //       mouse[i].hit = true
+  //       break
+  //     }
+  //   }
+  // }
+  //
+  // var hits = 0
+  // for (var i = 0; i < mouse.length; i++) {
+  //   if (mouse[i].hit) hits++
+  // }
+  //
+  // console.log(hits + ' / ' + mouse.length)
+}
+
 function flattenData (data) {
   var flat = []
 

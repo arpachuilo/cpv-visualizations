@@ -1,7 +1,8 @@
 function drawDataCoverage (matrix) {
   var svg = d3.select('#datacoverage')
-  var width = +svg.attr('width')
+  var width = svg.node().parentNode.offsetWidth
   var height = +svg.attr('height')
+  svg.attr('width', width)
   var outerRadius = Math.min(width, height) * 0.5 - 40
   var innerRadius = outerRadius - 30
 
