@@ -50,36 +50,62 @@ function drawCircularAOI (matrix, keys) {
   var group = g.append('g')
       .attr('class', 'groups')
     .selectAll('g')
-    .data(function(chords) { return chords.groups; })
-    .enter().append('g')
+    .data(function(chords) { return chords.groups })
+      .enter().append('g')
 
-  group.append('path')
+  var arcs = group.append('path')
     .attr('class', function (d) { return className(d.index)})
     .attr('d', arc)
     .on('mouseenter', function (d, i) {
       arcTip.show(d3.event, d, i)
+
+      var attachedArcIds = []
+      ribbons.filter(function (f) {
+        var t = (f.source.index !== d.index) && (f.target.index !== d.index)
+        if (!t) {
+          attachedArcIds.push(f.source.index)
+          attachedArcIds.push(f.target.index)
+        }
+        return t
+      }).attr('fill-opacity', 0.1)
+      arcs.filter(function(f) {
+        return !(attachedArcIds.includes(f.index))
+      }).attr('fill-opacity', 0.1)
     })
     .on('mousemove', function (d, i) {
       arcTip.show(d3.event, d, i)
     })
     .on('mouseout', function (d, i) {
       arcTip.hide(d3.event, d, i)
+      arcs.attr('fill-opacity', 1)
+
+      ribbons.attr('fill-opacity', 0.67)
     })
 
-  g.append('g')
+  var gRibbons = g.append('g')
       .attr('class', 'ribbons')
-    .selectAll('path')
+
+  var ribbons = gRibbons.selectAll('path')
     .data(function(chords) { return chords; })
     .enter().append('path')
       .attr('class', function (d) { return className(d.target.index)})
       .attr('d', ribbon)
       .on('mouseenter', function (d, i) {
         chordTip.show(d3.event, d, i)
+        ribbons.attr('fill-opacity', 0.1)
+        d3.select(this).attr('fill-opacity', 1)
+
+        arcs.filter(function (f) {
+          return (d.source.index !== f.index) && (d.target.index !== f.index)
+        }).attr('fill-opacity', 0.1)
       })
       .on('mousemove', function (d, i) {
         chordTip.show(d3.event, d, i)
       })
       .on('mouseout', function (d, i) {
         chordTip.hide(d3.event, d, i)
+        ribbons.attr('fill-opacity', 0.67)
+
+        arcs.attr('fill-opacity', 1)
       })
 }

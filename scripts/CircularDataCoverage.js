@@ -66,7 +66,7 @@ function drawDataCoverage (matrix) {
 
   var color = d3.scaleLinear()
       .domain([0, max])
-      .range(['#FFFFFF', '#4682B4'])
+      .range(['brown', '#4682B4'])
 
   var g = svg.append('g')
       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
@@ -78,24 +78,41 @@ function drawDataCoverage (matrix) {
       .data(function(chords) { return chords.groups; })
       .enter().append('g')
 
-  group
+  var arcs = group
     .append('path')
       .attr('fill', function(d) { return color(d.value); })
       .attr('stroke', function(d) { return d3.rgb(color(d.value)).darker(); })
       .attr('d', arc)
       .on('mouseenter', function (d) {
         arcTip.show(d3.event, d)
+
+        var attachedArcIds = []
+        ribbons.filter(function (f) {
+          var t = (f.source.index !== d.index) && (f.target.index !== d.index)
+          if (!t) {
+            attachedArcIds.push(f.source.index)
+            attachedArcIds.push(f.target.index)
+          }
+          return t
+        }).attr('fill-opacity', 0.1)
+        arcs.filter(function(f) {
+          return !(attachedArcIds.includes(f.index))
+        }).attr('fill-opacity', 0.1)
       })
       .on('mousemove', function (d) {
         arcTip.show(d3.event, d)
       })
       .on('mouseout', function (d) {
         arcTip.hide(d3.event, d)
+        arcs.attr('fill-opacity', 1)
+
+        ribbons.attr('fill-opacity', 0.67)
       })
 
-  g.append('g')
+  var gRibbons = g.append('g')
       .attr('class', 'ribbons')
-    .selectAll('path')
+
+  var ribbons = gRibbons.selectAll('path')
     .data(function(chords) { return chords; })
     .enter().append('path')
       .attr('d', ribbon)
@@ -103,11 +120,20 @@ function drawDataCoverage (matrix) {
       .attr('stroke', function(d) { return d3.rgb(color(d.target.value)).darker(); })
       .on('mouseenter', function (d) {
         chordTip.show(d3.event, d)
+        ribbons.attr('fill-opacity', 0.1)
+        d3.select(this).attr('fill-opacity', 1)
+
+        arcs.filter(function (f) {
+          return (d.source.index !== f.index) && (d.target.index !== f.index)
+        }).attr('fill-opacity', 0.1)
       })
       .on('mousemove', function (d) {
         chordTip.show(d3.event, d)
       })
       .on('mouseout', function (d) {
         chordTip.hide(d3.event, d)
+        ribbons.attr('fill-opacity', 0.67)
+
+        arcs.attr('fill-opacity', 1)
       })
 }

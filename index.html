@@ -77,7 +77,7 @@
   var bounds = false
   var stackedChart = StackedBarChart(d3.select('#timeControl'))
     .keys(classKeys)
-    .onBrushDrag(function (event, extent) {
+    .onBrushDrag(function (e, extent) {
       bounds = extent
       drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
       drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))

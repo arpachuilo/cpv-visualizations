@@ -267,3 +267,7 @@ function convertDataForAOI (data, bounds = false) {
 
   return matrix
 }
+
+function convertDataForEvent (data, bounds = false) {
+
+}

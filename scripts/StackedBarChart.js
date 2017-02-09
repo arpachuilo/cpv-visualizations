@@ -43,6 +43,16 @@ function StackedBarChart(selection, brushable = true) {
       .attr('class', 'y axis')
 
     if (brushable) {
+      var brushTipFunction = function (d) {
+        var text = d[0] + ' to ' + d[1]
+        return text
+      }
+
+      var brushTip = new Tooltip()
+        .attr('className', 'tooltip')
+        .offset([-8, 0])
+        .html(brushTipFunction)
+
       gBrush = gEnter.append('g')
         .attr('class', 'brush')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
@@ -56,11 +66,13 @@ function StackedBarChart(selection, brushable = true) {
         .on('brush', function () {
           if (d3.event.selection !== null) {
             onBrushDrag(d3.event, d3.event.selection.map(x.invert))
+            brushTip.show(event, d3.event.selection.map(x.invert))
           }
         })
         .on('end', function () {
           if (d3.event.selection !== null) {
             onBrushEnd(d3.event, d3.event.selection.map(x.invert))
+            brushTip.hide()
           }
         })
     }
