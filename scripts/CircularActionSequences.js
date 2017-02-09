@@ -69,7 +69,7 @@ function drawCircularActionSequence (data) {
 
   var arcs = outerGroup.append('path')
     .attr('d', outerArc)
-    .attr('fill', function (d) { return outerColors(data.outerKeys[d.index]) })
+    .attr('class', function (d) { return data.outerKeys[d.index] })
     .on('mouseenter', function (d) {
       arcTip.show(d3.event, d)
 
@@ -140,7 +140,7 @@ function drawCircularActionSequence (data) {
     .data(function(chords) { return chords; })
     .enter().append('path')
       .attr('d', ribbon)
-      .attr('fill', function (d) { return outerColors(data.outerKeys[d.source.index] )})
+      .attr('class', function (d) { return data.outerKeys[d.source.index] })
       .on('mouseenter', function (d) {
         chordTip.show(d3.event, d)
         ribbons.attr('fill-opacity', 0.05)

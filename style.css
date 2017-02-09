@@ -18,6 +18,29 @@ svg {
   --offices-color: #a6cee3;
   --stroke-color: #000000;
   --stroke-opacity: 0.1;
+  --officesCleared-color: #1676B6;
+  --officeMouseEnter-color: #ADC6EA;
+  --officeClicked-color: #FF7F00;
+  --sliderMoved-color: #FFBB72;
+  --mouseEnter-color: #24A122;
+  --accessTimeClicked-color: #96E086;
+  --histogramBrushStart-color: #8D564A;
+  --histogramBrushEnd-color: #C59C93;
+  --headerClicked-color: #9564BF;
+  --rowClicked-color: #C5AFD6;
+  --rowMouseOver-color: #D8241F;
+  --tableToggleSelected-color: #FF9794;
+  --pageChange-color: #E574C3;
+  --histogramBarClick-color: #F9B5D2;
+  --histogramBarMouseEnter-color: #7F7F7F;
+  --graphNodeMouseEnter-color: #C7C7C7;
+}
+
+.overviewHist, .overviewHist * {
+  fill: var(--oHist-color);
+  background-color: var(--oHist-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
 }
 
 .overviewHist, .overviewHist * {
@@ -51,6 +74,118 @@ svg {
 .offices, .offices * {
   fill: var(--offices-color);
   background-color: var(--offices-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.officesCleared, .officesCleared * {
+  fill: var(--officesCleared-color);
+  background-color: var(--officesCleared-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.officeMouseEnter, .officeMouseEnter * {
+  fill: var(--officeMouseEnter-color);
+  background-color: var(--officeMouseEnter-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.officeClicked, .officeClicked * {
+  fill: var(--officeClicked-color);
+  background-color: var(--officeClicked-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.sliderMoved, .sliderMoved * {
+  fill: var(--sliderMoved-color);
+  background-color: var(--sliderMoved-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.mouseEnter, .mouseEnter * {
+  fill: var(--mouseEnter-color);
+  background-color: var(--mouseEnter-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.accessTimeClicked, .accessTimeClicked * {
+  fill: var(--accessTimeClicked-color);
+  background-color: var(--accessTimeClicked-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.histogramBrushStart, .histogramBrushStart * {
+  fill: var(--histogramBrushStart-color);
+  background-color: var(--histogramBrushStart-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.histogramBrushEnd, .histogramBrushEnd * {
+  fill: var(--histogramBrushEnd-color);
+  background-color: var(--histogramBrushEnd-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.headerClicked, .headerClicked * {
+  fill: var(--headerClicked-color);
+  background-color: var(--headerClicked-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.rowClicked, .rowClicked * {
+  fill: var(--rowClicked-color);
+  background-color: var(--rowClicked-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.rowMouseOver, .rowMouseOver * {
+  fill: var(--rowMouseOver-color);
+  background-color: var(--rowMouseOver-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.tableToggleSelected, .tableToggleSelected * {
+  fill: var(--tableToggleSelected-color);
+  background-color: var(--tableToggleSelected-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.pageChange, .pageChange * {
+  fill: var(--pageChange-color);
+  background-color: var(--pageChange-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.histogramBarClick, .histogramBarClick * {
+  fill: var(--histogramBarClick-color);
+  background-color: var(--histogramBarClick-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.histogramBarMouseEnter, .histogramBarMouseEnter * {
+  fill: var(--histogramBarMouseEnter-color);
+  background-color: var(--histogramBarMouseEnter-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
+}
+
+.graphNodeMouseEnter, .graphNodeMouseEnter * {
+  fill: var(--graphNodeMouseEnter-color);
+  background-color: var(--graphNodeMouseEnter-color);
   stroke: var(--stroke-color);
   stroke-opacity: var(--stroke-opacity);
 }
