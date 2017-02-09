@@ -11,6 +11,7 @@
   <script src='./scripts/StackedBarChart.js'></script>
   <script src='./scripts/CircularAOI.js'></script>
   <script src='./scripts/CircularDataCoverage.js'></script>
+  <script src='./scripts/CircularActionSequences.js'></script>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
@@ -36,18 +37,17 @@
 
   <div class='row'>
     <div class='row'>
-      <div class='two columns'>
-        <div class='key overviewHist'></div><span>Overview Histogram</span></br>
-        <div class='key detailHist'></div><span>Detail Histogram</span></br>
-        <div class='key graph'></div><span>Graph</span></br>
-        <div class='key table'></div><span>Table</span></br>
-        <div class='key offices'></div><span>Office View</span></br>
-      </div>
-      <div class='five columns'>
+      <div class='four columns'>
+        <h4 class='centered'>Area of Interest</h4>
         <svg id='aoi' width='480' height='480'></svg>
       </div>
-      <div class='five columns'>
+      <div class='four columns'>
+        <h4 class='centered'>User Data Filters</h4>
         <svg id='datacoverage' width='480' height='480'></svg>
+      </div>
+      <div class='four columns'>
+        <h4 class='centered'>User Actions</h4>
+        <svg id='as' width='480' height='480'></svg>
       </div>
     </div>
     <div class='row'>
@@ -81,6 +81,7 @@
       bounds = extent
       drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
       drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
+      drawCircularActionSequence(convertDataForActionSequence(loadedMouseData, bounds))
     })
 
   var loadedEyeData = []
@@ -90,6 +91,7 @@
     bounds = false
     drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
     drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
+    drawCircularActionSequence(convertDataForActionSequence(loadedMouseData, bounds))
     stackedChart.clearBrush()
   }
 
@@ -105,6 +107,7 @@
       .update()
     drawCircularAOI(convertDataForAOI(loadedMouseData), classKeys)
     drawDataCoverage(convertDataForCoverage(loadedMouseData))
+    drawCircularActionSequence(convertDataForActionSequence(loadedMouseData))
   })
 
   function loadData (value) {

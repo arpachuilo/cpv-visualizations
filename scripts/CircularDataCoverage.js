@@ -64,9 +64,8 @@ function drawDataCoverage (matrix) {
     }
   }
 
-  var color = d3.scaleLinear()
+  var color = d3.scaleSequential(d3.interpolateCool)
       .domain([0, max])
-      .range(['brown', '#4682B4'])
 
   var g = svg.append('g')
       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
@@ -94,7 +93,7 @@ function drawDataCoverage (matrix) {
             attachedArcIds.push(f.target.index)
           }
           return t
-        }).attr('fill-opacity', 0.1)
+        }).attr('fill-opacity', 0.05)
         arcs.filter(function(f) {
           return !(attachedArcIds.includes(f.index))
         }).attr('fill-opacity', 0.1)
@@ -120,8 +119,8 @@ function drawDataCoverage (matrix) {
       .attr('stroke', function(d) { return d3.rgb(color(d.target.value)).darker(); })
       .on('mouseenter', function (d) {
         chordTip.show(d3.event, d)
-        ribbons.attr('fill-opacity', 0.1)
-        d3.select(this).attr('fill-opacity', 1)
+        ribbons.attr('fill-opacity', 0.05)
+        d3.select(this).attr('fill-opacity', 0.67)
 
         arcs.filter(function (f) {
           return (d.source.index !== f.index) && (d.target.index !== f.index)
@@ -132,8 +131,8 @@ function drawDataCoverage (matrix) {
       })
       .on('mouseout', function (d) {
         chordTip.hide(d3.event, d)
-        ribbons.attr('fill-opacity', 0.67)
 
+        ribbons.attr('fill-opacity', 0.67)
         arcs.attr('fill-opacity', 1)
       })
 }

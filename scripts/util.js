@@ -61,7 +61,8 @@ function flattenData (data) {
   Object.keys(data[0]).forEach(function (key) {
     if (key !== 'id') {
       data[0][key].forEach(function (d) {
-        if (d.eventType !== 'click' && d.eventType !== 'brushStart' && d.eventType !== 'brushEnd' && d.eventType !== 'mouseup' && d.eventType !== 'keyup') {
+        // if (d.eventType !== 'click' && d.eventType !== 'brushStart' && d.eventType !== 'brushEnd' && d.eventType !== 'mouseup' && d.eventType !== 'keyup') {
+        if (true) {
           d.id = key
           d.time = moment(d.date)
           flat.push(d)
@@ -151,7 +152,7 @@ function convertDataForCoverage (data, bounds = false) {
     var exist = false
     for (var j = 0; j < filters.length; j++) {
       if (_.isEqual(filters[j], data[i].filters)) {
-        var exist = true
+        exist = true
         break
       }
     }
@@ -239,13 +240,13 @@ function convertDataForAOI (data, bounds = false) {
     'graphNodeMouseEnter': 'graph'
   }
 
-  var matrix = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-  ]
+  var matrix = []
+  for (var i = 0; i < Object.keys(keys).length; i++) {
+    matrix.push([])
+    for (var j = 0; j < Object.keys(keys).length; j++) {
+      matrix[i].push(0)
+    }
+  }
 
   var previousId = null
   var previousTime = null
@@ -268,6 +269,158 @@ function convertDataForAOI (data, bounds = false) {
   return matrix
 }
 
-function convertDataForEvent (data, bounds = false) {
+function convertDataForActionSequence (data, bounds = false) {
+  // Filter data
+  var data = data.filter(function (d) {
+    return (bounds ? (
+      bounds[0] <= d.time && d.time <= bounds[1]
+    ) : true) && d.id !== 'mouseEnter'
+  })
 
+  // Get keyings for each matrix
+  var outerKeys = [] // keys themselves
+  var middleKeys = [] // event types
+  var innerKeys = [] // targets
+  for (var i = 0; i < data.length; i++) {
+    // Out keyings
+    var outerExist = false
+    for (var j = 0; j < outerKeys.length; j++) {
+      if (_.isEqual(outerKeys[j], data[i].id)) {
+        outerExist = true
+        break
+      }
+    }
+
+    if (!outerExist) {
+      outerKeys.push(data[i].id)
+    }
+
+    // Middle keyings
+    var middleExist = false
+    for (var j = 0; j < middleKeys.length; j++) {
+      if (_.isEqual(middleKeys[j], data[i].eventType)) {
+        middleExist = true
+        break
+      }
+    }
+
+    if (!middleExist) {
+      middleKeys.push(data[i].eventType)
+    }
+
+    // Inner keyings
+    var innerExist = false
+    for (var j = 0; j < innerKeys.length; j++) {
+      if (_.isEqual(innerKeys[j], data[i].target)) {
+        innerExist = true
+        break
+      }
+    }
+
+    if (!innerExist) {
+      innerKeys.push(data[i].target)
+    }
+  }
+
+  // Init matrices
+  var outerMatrix = []
+  var middleMatrix = []
+  var innerMatrix = []
+
+  // Init outer
+  for (var i = 0; i < outerKeys.length; i++) {
+    outerMatrix.push([])
+    for (var j = 0; j < outerKeys.length; j++) {
+      outerMatrix[i].push(0)
+    }
+  }
+
+  // Init middle
+  for (var i = 0; i < middleKeys.length; i++) {
+    middleMatrix.push([])
+    for (var j = 0; j < middleKeys.length; j++) {
+      middleMatrix[i].push(0)
+    }
+  }
+
+  // Init inner
+  for (var i = 0; i < innerKeys.length; i++) {
+    innerMatrix.push([])
+    for (var j = 0; j < innerKeys.length; j++) {
+      innerMatrix[i].push(0)
+    }
+  }
+
+  function getKeyIndex (f, k) {
+    var index = -1
+    for (var x = 0; x < k.length; x++) {
+      if (_.isEqual(k[x], f)) {
+        index = x
+        break
+      }
+    }
+    return index
+  }
+
+  // Populate matrices
+  var previousOuter = null
+  var previousOuterTime = null
+  var previousMiddle = null
+  var previousMiddleTime = null
+  var previousInner = null
+  var previousInnerTime = null
+  for (var i = 0; i < data.length; i++) {
+    if (previousOuter === null || previousOuterTime === null) {
+      previousOuter = data[i].id
+      previousOuterTime = data[i].time
+      previousMiddle = data[i].eventType
+      previousMiddleTime = data[i].time
+      previousInner = data[i].target
+      previousInnerTime = data[i].time
+    }
+
+    // Outer
+    if (!(_.isEqual(previousOuter, data[i].id)) || i === data.length - 1) {
+      var fromIndex = getKeyIndex(previousOuter, outerKeys)
+      var toIndex = getKeyIndex(data[i].id, outerKeys)
+
+      var outerTimeElapsed = data[i].time - previousOuterTime
+
+      outerMatrix[fromIndex][toIndex] += outerTimeElapsed / 1000
+      previousOuter = data[i].id
+      previousOuterTime = data[i].time
+    }
+
+    // Middle
+    if (!(_.isEqual(previousMiddle, data[i].eventType)) || i === data.length - 1) {
+      var fromIndex = getKeyIndex(previousMiddle, middleKeys)
+      var toIndex = getKeyIndex(data[i].eventType, middleKeys)
+
+      middleTimeElapsed = data[i].time - previousMiddleTime
+      middleMatrix[fromIndex][toIndex] += middleTimeElapsed / 1000
+      previousMiddle = data[i].eventType
+      previousMiddleTime = data[i].time
+    }
+
+    // Inner
+    if (!(_.isEqual(previousInner, data[i].target)) || i === data.length - 1) {
+      var fromIndex = getKeyIndex(previousInner, innerKeys)
+      var toIndex = getKeyIndex(data[i].target, innerKeys)
+
+      var innerTimeElapsed = data[i].time - previousInnerTime
+
+      innerMatrix[fromIndex][toIndex] += innerTimeElapsed / 1000
+      previousInner = data[i].target
+      previousInnerTime = data[i].time
+    }
+  }
+
+  return {
+    outerMatrix: outerMatrix,
+    middleMatrix: middleMatrix,
+    innerMatrix: innerMatrix,
+    outerKeys: outerKeys,
+    middleKeys: middleKeys,
+    innerKeys: innerKeys
+  }
 }

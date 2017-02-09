@@ -67,7 +67,7 @@ function drawCircularAOI (matrix, keys) {
           attachedArcIds.push(f.target.index)
         }
         return t
-      }).attr('fill-opacity', 0.1)
+      }).attr('fill-opacity', 0.05)
       arcs.filter(function(f) {
         return !(attachedArcIds.includes(f.index))
       }).attr('fill-opacity', 0.1)
@@ -92,8 +92,8 @@ function drawCircularAOI (matrix, keys) {
       .attr('d', ribbon)
       .on('mouseenter', function (d, i) {
         chordTip.show(d3.event, d, i)
-        ribbons.attr('fill-opacity', 0.1)
-        d3.select(this).attr('fill-opacity', 1)
+        ribbons.attr('fill-opacity', 0.05)
+        d3.select(this).attr('fill-opacity', 0.67)
 
         arcs.filter(function (f) {
           return (d.source.index !== f.index) && (d.target.index !== f.index)
