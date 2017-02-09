@@ -67,7 +67,7 @@ function drawCircularActionSequence (data) {
     .data(function(chords) { return chords.groups })
       .enter().append('g')
 
-  var arc = outerGroup.append('path')
+  var arcs = outerGroup.append('path')
     .attr('d', outerArc)
     .attr('fill', function (d) { return outerColors(data.outerKeys[d.index]) })
     .on('mouseenter', function (d) {
@@ -82,7 +82,7 @@ function drawCircularActionSequence (data) {
         }
         return t
       }).attr('fill-opacity', 0.05)
-      arc.filter(function(f) {
+      arcs.filter(function(f) {
         return !(attachedArcIds.includes(f.index))
       }).attr('fill-opacity', 0.1)
     })
@@ -91,7 +91,7 @@ function drawCircularActionSequence (data) {
     })
     .on('mouseout', function (d) {
       arcTip.hide(d3.event, d)
-      arc.attr('fill-opacity', 1)
+      arcs.attr('fill-opacity', 1)
 
       ribbons.attr('fill-opacity', 0.67)
     })
@@ -146,7 +146,7 @@ function drawCircularActionSequence (data) {
         ribbons.attr('fill-opacity', 0.05)
         d3.select(this).attr('fill-opacity', 0.67)
 
-        outerArcs.filter(function (f) {
+        arcs.filter(function (f) {
           return (d.source.index !== f.index) && (d.target.index !== f.index)
         }).attr('fill-opacity', 0.1)
       })
@@ -157,6 +157,6 @@ function drawCircularActionSequence (data) {
         chordTip.hide(d3.event, d)
 
         ribbons.attr('fill-opacity', 0.67)
-        outerArcs.attr('fill-opacity', 1)
+        arcs.attr('fill-opacity', 1)
       })
 }
