@@ -5,8 +5,7 @@ function drawDataCoverage (matrix) {
   var outerRadius = Math.min(width, height) * 0.5 - 40
   var innerRadius = outerRadius - 30
 
-  var arcTooltipFunction = function (d) {
-    var filter = matrix.filters[d.index]
+  function filterString (filter) {
     var text = ''
     _.forOwn(filter, function(value, key) {
       text += '<label>' + key + ': ' + '</label>'
@@ -25,6 +24,10 @@ function drawDataCoverage (matrix) {
     })
 
     return text === '' ? 'No Filters' : text
+  }
+
+  var arcTooltipFunction = function (d) {
+    return filterString(matrix.filters[d.index])
   }
 
   var chordTooltipFunction = function (d) {
@@ -79,6 +82,7 @@ function drawDataCoverage (matrix) {
 
   var arcs = group
     .append('path')
+      .attr('id', function (d) { return filterString(matrix.filters[d.index]).replace(/(<([^>]+)>)/gi, ' ') })
       .attr('fill', function(d) { return color(d.value); })
       .attr('stroke', function(d) { return d3.rgb(color(d.value)).darker(); })
       .attr('d', arc)
@@ -107,6 +111,20 @@ function drawDataCoverage (matrix) {
 
         ribbons.attr('fill-opacity', 0.67)
       })
+
+    var arcText = group.append('text')
+      .attr('x', 6)
+      .attr('dy', 15)
+
+    arcText.append('textPath')
+      .attr('xlink:href', function (d) { return '#' + filterString(matrix.filters[d.index]).replace(/(<([^>]+)>)/gi, ' ') })
+      .text(function (d) {
+        return filterString(matrix.filters[d.index]).replace(/(<([^>]+)>)/gi, ' ')
+      })
+
+    arcText.filter(function (d) {
+      return arcs._groups[0][d.index].getTotalLength() / 2 - 16 < this.getComputedTextLength()
+    }).remove()
 
   var gRibbons = g.append('g')
       .attr('class', 'ribbons')

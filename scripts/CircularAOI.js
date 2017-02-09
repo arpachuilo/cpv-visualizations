@@ -54,7 +54,8 @@ function drawCircularAOI (matrix, keys) {
       .enter().append('g')
 
   var arcs = group.append('path')
-    .attr('class', function (d) { return className(d.index)})
+    .attr('id', function (d) { return className(d.index) })
+    .attr('class', function (d) { return className(d.index) })
     .attr('d', arc)
     .on('mouseenter', function (d, i) {
       arcTip.show(d3.event, d, i)
@@ -81,6 +82,18 @@ function drawCircularAOI (matrix, keys) {
 
       ribbons.attr('fill-opacity', 0.67)
     })
+
+  var arcText = group.append('text')
+    .attr('x', 6)
+    .attr('dy', 15)
+
+  arcText.append('textPath')
+    .attr('xlink:href', function (d) { return '#' + className(d.index) })
+    .text(function (d) { return className(d.index) })
+
+  arcText.filter(function (d) {
+    return arcs._groups[0][d.index].getTotalLength() / 2 - 16 < this.getComputedTextLength()
+  }).remove()
 
   var gRibbons = g.append('g')
       .attr('class', 'ribbons')

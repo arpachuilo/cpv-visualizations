@@ -69,6 +69,7 @@ function drawCircularActionSequence (data) {
 
   var arcs = outerGroup.append('path')
     .attr('d', outerArc)
+    .attr('id', function (d) { return data.outerKeys[d.index] })
     .attr('class', function (d) { return data.outerKeys[d.index] })
     .on('mouseenter', function (d) {
       arcTip.show(d3.event, d)
@@ -95,6 +96,18 @@ function drawCircularActionSequence (data) {
 
       ribbons.attr('fill-opacity', 0.67)
     })
+
+  var arcText = outerGroup.append('text')
+    .attr('x', 6)
+    .attr('dy', 15)
+
+  arcText.append('textPath')
+    .attr('xlink:href', function (d) { return '#' + data.outerKeys[d.index] })
+    .text(function (d) { return data.outerKeys[d.index] })
+
+  arcText.filter(function (d) {
+    return arcs._groups[0][d.index].getTotalLength() / 2 - 16 < this.getComputedTextLength()
+  }).remove()
 
   // Middle Arc
   // var middleG = svg.append('g')
