@@ -13,6 +13,7 @@ function StackedBarChart(selection, brushable = true) {
   var onBrushStart = function (d) {}
   var onBrushDrag = function (d) {}
   var onBrushEnd = function (d) {}
+  var onBrushClick = function (d) {}
 
   // init chart here
   var svg, gChart, gXaxis, gYaxis, gBrush, brush
@@ -121,12 +122,10 @@ function StackedBarChart(selection, brushable = true) {
       gBrush
         .call(brush.extent([[0, 0], [chartWidth, chartHeight]]))
         .call(brush.move, null)
+        .on('click', function () {
+          onBrushClick()
+        })
     }
-  }
-
-  this.clearBrush = function () {
-    gBrush.call(brush.move, null)
-    return this
   }
 
   this.onBrushStart = function (_) {
@@ -144,6 +143,12 @@ function StackedBarChart(selection, brushable = true) {
   this.onBrushEnd = function (_) {
     if (!arguments.length) return onBrushEnd
     onBrushEnd = _
+    return this
+  }
+
+  this.onBrushClick = function (_) {
+    if (!arguments.length) return onBrushClick
+    onBrushClick = _
     return this
   }
 

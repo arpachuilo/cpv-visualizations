@@ -2,6 +2,38 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+#user-video {
+  width: 1280;
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.navbar-list {
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.navbar-item {
+  position: relative;
+  float: left;
+}
+
+.navbar-link {
+  text-transform: uppercase;
+  margin-right: 32px;
+  font-weight: 600;
+  font-size: 24px;
+}
+
 svg {
   shapre-rendering: crispEdges;
 }

@@ -9,6 +9,7 @@
   <script src='./scripts/Tooltip.js'></script>
   <script src='./scripts/HeatPointChart.js'></script>
   <script src='./scripts/StackedBarChart.js'></script>
+  <script src='./scripts/VideoHeatmap.js'></script>
   <script src='./scripts/CircularAOI.js'></script>
   <script src='./scripts/CircularDataCoverage.js'></script>
   <script src='./scripts/CircularActionSequences.js'></script>
@@ -17,60 +18,60 @@
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
   <link rel='stylesheet' href='style.css'>
 
-  <!-- <link rel='import' href='heatmap.html'> -->
-
 </head>
 <body>
-  <span>Dataset: </span>
-  <select id='dataset' onchange='onDatasetChange()'>
-    <option value='CPV-A'>CPV-A</option>
-    <option value='CPV-B'>CPV-B</option>
-    <option value='CPV-C'>CPV-C</option>
-    <option value='CPV-D'>CPV-D</option>
-    <option value='CPV-E'>CPV-E</option>
-    <option value='CPV-F'>CPV-F</option>
-    <option value='CPV-G'>CPV-G</option>
-    <option value='CPV-H'>CPV-H</option>
-    <option value='CPV-I'>CPV-I</option>
-    <option value='CPV-J'>CPV-J</option>
-  </select>
 
   <div class='row'>
     <div class='row'>
-      <div class='four columns'>
-        <h5 class='centered'>Area of Interest</h5>
-        <svg id='aoi' height='480'></svg>
-      </div>
-      <div class='four columns'>
-        <h5 class='centered'>User Data Filters</h5>
-        <svg id='datacoverage' height='480'></svg>
-      </div>
-      <div class='four columns'>
-        <h5 class='centered'>User Actions</h5>
-        <svg id='as' height='480'></svg>
-      </div>
+      <span>Dataset: </span>
+      <select id='dataset' onchange='onDatasetChange()'>
+        <option value='CPV-A'>CPV-A</option>
+        <option value='CPV-B'>CPV-B</option>
+        <option value='CPV-C'>CPV-C</option>
+        <option value='CPV-D'>CPV-D</option>
+        <option value='CPV-E'>CPV-E</option>
+        <option value='CPV-F'>CPV-F</option>
+        <option value='CPV-G'>CPV-G</option>
+        <option value='CPV-H'>CPV-H</option>
+        <option value='CPV-I'>CPV-I</option>
+        <option value='CPV-J'>CPV-J</option>
+      </select>
     </div>
+
     <div class='row'>
-      <div class='twelve columns' id='timeControl'></div>
-      <button onclick='removeBrush()'>Clear Brush</button>
+      <div class='row'>
+        <div class='four columns'>
+          <h5 class='centered'>Area of Interest</h5>
+          <svg id='aoi' height='480'></svg>
+        </div>
+        <div class='four columns'>
+          <h5 class='centered'>User Data Filters</h5>
+          <svg id='datacoverage' height='480'></svg>
+        </div>
+        <div class='four columns'>
+          <h5 class='centered'>User Actions</h5>
+          <svg id='as' height='480'></svg>
+        </div>
+      </div>
+      <div class='row'>
+        <div class='twelve columns' id='timeControl'></div>
+      </div>
     </div>
   </div>
 
-  <!-- <div id='heatmap'></div> -->
+  <!-- <div class='row' style='position: relative; margin: 0 auto;'>
+    <video id='user-video'></video>
+    <canvas id='video-overlay'></canvas>
+  </div> -->
+
+  <!-- <div class='row'>
+    <div style='width: 960; height: 540; background:#000; position: relative;'>
+      <img style='position: absolute' src='app.png' width='960' height='540' />
+      <svg style='position: absolute' id='imgOverlay' width='960' height='540'></svg>
+    </div>
+  </div> -->
 
   <script>
-
-  // function insertHeatmap () {
-  //   var link = document.querySelector('link[rel="import"]')
-  //   var content = link.import
-  //
-  //   var el = content.querySelector('.heatmap')
-  //
-  //   document.getElementById('heatmap').appendChild(el.cloneNode(true))
-  // }
-
-  // insertHeatmap()
-
 
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
 
@@ -79,45 +80,51 @@
     .keys(classKeys)
     .onBrushDrag(function (e, extent) {
       bounds = extent
-      drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
-      drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
-      drawCircularActionSequence(convertDataForActionSequence(loadedMouseData, bounds))
+      drawCharts()
     })
+    .onBrushClick(function () {
+      bounds = false
+      drawCharts()
+    })
+
+  // var videoHeatmap = VideoHeatmap(d3.select('#video-overlay'), document.getElementById('user-video'))
 
   var loadedEyeData = []
   var loadedMouseData = []
 
-  function removeBrush () {
-    bounds = false
-    drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
-    drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
-    drawCircularActionSequence(convertDataForActionSequence(loadedMouseData, bounds))
-    stackedChart.clearBrush()
-  }
-
-  function onDatasetChange () {
-    var value = document.getElementById('dataset').value
-    loadData(value)
-  }
-
   document.addEventListener('data-loaded', function () {
+    // var video = document.getElementById('user-video')
+    // video.pause()
+    // video.setAttribute('src', 'data/' + document.getElementById('dataset').value + '.mp4')
+    // videoHeatmap
+    //   .setEyeData(loadedEyeData)
+    //   .setMouseData(loadedMouseData)
+
     bounds = false
     stackedChart
       .data(timeBinData(loadedMouseData, 90))
       .update()
-    drawCircularAOI(convertDataForAOI(loadedMouseData), classKeys)
-    drawDataCoverage(convertDataForCoverage(loadedMouseData))
-    drawCircularActionSequence(convertDataForActionSequence(loadedMouseData))
+    drawCharts()
   })
+
+  function drawCharts () {
+    drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
+    drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
+    drawCircularActionSequence(convertDataForActionSequence(loadedMouseData, bounds))
+  }
+
+  function onDatasetChange () {
+    loadData(document.getElementById('dataset').value)
+  }
 
   function loadData (value) {
     d3.text('data/converted-' + value + '.csv', function(text) {
-      loadedEyeData = d3.csvParse('status,x,y,time,aoi\n' + text)
+      // loadedEyeData = d3.csvParse('status,x,y,time,aoi\n' + text)
       d3.json('data/' + value + '.json', function (mouse) {
         loadedMouseData = flattenData(mouse)
+        console.log(loadedMouseData[0].time._i)
         // zipMouseEye(loadedMouseData, loadedEyeData)
-        var event = new Event('data-loaded')
-        document.dispatchEvent(event)
+        document.dispatchEvent(new Event('data-loaded'))
       })
     })
   }
