@@ -166,5 +166,15 @@ function StackedBarChart(selection, brushable = true) {
     return this
   }
 
+  this.resizeFunc = function (_) {
+    var svg = gChart.node().ownerSVGElement
+    width = svg.parentNode.offsetWidth
+
+    d3.select(svg)
+      .attr('width', width)
+      .attr('height', height)
+    return this
+  }
+
   return this
 }

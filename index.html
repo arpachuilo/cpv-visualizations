@@ -24,7 +24,7 @@
   <link rel='stylesheet' href='style.css'>
 
 </head>
-<body>
+<body onresize='resize()'>
 
   <div class='row'>
     <div class='row'>
@@ -44,22 +44,23 @@
     </div>
 
     <div class='row'>
+      <div class='twelve columns' id='timeControl'></div>
+    </div>
+
+    <div class='row'>
       <div class='row'>
         <div class='four columns'>
-          <h5 class='centered'>Area of Interest</h5>
           <svg id='aoi' height='480'></svg>
+          <h5 class='centered'>Area of Interest</h5>
         </div>
         <div class='four columns'>
-          <h5 class='centered'>User Data Filters</h5>
           <svg id='datacoverage' height='480'></svg>
+          <h5 class='centered'>User Data Filters</h5>
         </div>
         <div class='four columns'>
-          <h5 class='centered'>User Actions</h5>
           <svg id='as' height='480'></svg>
+          <h5 class='centered'>User Actions</h5>
         </div>
-      </div>
-      <div class='row'>
-        <div class='twelve columns' id='timeControl'></div>
       </div>
     </div>
   </div>
@@ -98,6 +99,15 @@
 
   var eyeData = []
   var mouseData = []
+
+  function resize() {
+    _.delay(function () {
+      stackedChart
+        .resizeFunc()
+        .update()
+      drawCharts()
+    }, 500)
+  }
 
   document.addEventListener('data-loaded', function () {
     // var video = document.getElementById('user-video')
