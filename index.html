@@ -69,11 +69,12 @@
     <div class='key' style='background-color: green'></div><span>Mouse</span>
 
     <div id='video-container' class='row' style='position: relative; margin: 0 auto;'>
-      <video id='user-video'>
+      <!-- <video id='user-video'>
         <source id='user-video-source' type='video/mp4'></source>
-      </video>
-      <!-- <svg id='bbox-overlay'></svg> -->
-      <canvas id='video-overlay'></canvas>
+      </video> -->
+      <img id='app-img' src='app.png' />
+      <svg id='bbox-overlay'></svg>
+      <!-- <canvas id='video-overlay'></canvas> -->
     </div>
   </div>
 
@@ -83,7 +84,7 @@
 
   var bounds = false
 
-  var videoHeatmap = VideoHeatmap(document.getElementById('video-overlay'), document.getElementById('user-video'))
+  // var videoHeatmap = VideoHeatmap(document.getElementById('video-overlay'), document.getElementById('user-video'))
   var stackedChart = StackedBarChart(d3.select('#timeControl'))
     .keys(classKeys)
     .onBrushDrag(function (e, extent) {
@@ -99,16 +100,16 @@
   var mouseData = []
 
   document.addEventListener('data-loaded', function () {
-    var video = document.getElementById('user-video')
+    // var video = document.getElementById('user-video')
     // video.pause()
-
-    var videoSource = document.getElementById('user-video-source')
-    videoSource.setAttribute('src', videoLinks[document.getElementById('dataset').value])
-    videoHeatmap
-      .setEyeData(eyeData)
-      .setMouseData(mouseData)
-
-
+    //
+    // var videoSource = document.getElementById('user-video-source')
+    // videoSource.setAttribute('src', videoLinks[document.getElementById('dataset').value])
+    // videoHeatmap
+    //   .setEyeData(eyeData)
+    //   .setMouseData(mouseData)
+    //
+    //
     // video.play()
     bounds = false
     stackedChart
@@ -120,7 +121,7 @@
   function drawCharts () {
     drawCircularAOI(convertDataForAOI(mouseData, bounds), classKeys)
     drawDataCoverage(convertDataForCoverage(mouseData, bounds))
-    drawCircularActionSequence(convertDataForActionSequence(mouseData, bounds))
+    drawCircularActionSequence(convertDataForActionSequence(mouseData, bounds), mouseData, bounds)
   }
 
   function onDatasetChange () {
@@ -139,6 +140,6 @@
   }
 
   loadData('CPV-A')
-  // drawBbox(bboxArray)
+  drawBbox(bboxArray)
   </script>
 </body>

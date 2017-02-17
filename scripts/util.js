@@ -2,25 +2,22 @@
 var bboxArray = [
   {
     key: 'detailHist',
-    bbox: [0, 0, 1066, 331]
+    bbox: [0, 0, 1085, 331]
   }, {
     key: 'overviewHist',
-    bbox: [0, 331, 1066, 223]
+    bbox: [0, 331, 1085, 223]
   }, {
     key: 'graph',
-    bbox: [0, 554, 1066, 526]
+    bbox: [0, 554, 1085, 526]
   }, {
     key: 'offices',
-    bbox: [1066, 0, 920, 272]
-  }, {
-    key: 'officesKeys',
-    bbox: [1066, 272, 920, 31]
+    bbox: [1085, 0, 901, 303]
   }, {
     key: 'info',
-    bbox: [1066, 303, 920, 192]
+    bbox: [1085, 303, 901, 192]
   }, {
     key: 'table',
-    bbox: [1066, 495, 920, 585]
+    bbox: [1085, 495, 901, 585]
   }
 ]
 
@@ -428,5 +425,78 @@ function convertDataForActionSequence (data, bounds = false) {
     outerKeys: outerKeys,
     middleKeys: middleKeys,
     innerKeys: innerKeys
+  }
+}
+
+function generateActionSequence (data, bounds = false, key = false) {
+  data = data.filter(function (d) {
+    return (bounds ? (
+      bounds[0] <= d.date && d.date <= bounds[1]
+    ) : true) && d.id !== 'mouseEnter' && (key ? true : d.id === key)
+  })
+
+  function getKeyIndex (f, k) {
+    var index = -1
+    for (var x = 0; x < k.length; x++) {
+      if (_.isEqual(k[x], f)) {
+        index = x
+        break
+      }
+    }
+    return index
+  }
+
+  // Get keyings for each matrix
+  var keys = []
+  for (var i = 0; i < data.length; i++) {
+
+    // Inner keyings
+    var exist = false
+    for (var j = 0; j < keys.length; j++) {
+      if (_.isEqual(keys[j], data[i].target)) {
+        exist = true
+        break
+      }
+    }
+
+    if (!exist) {
+      keys.push(data[i].target)
+    }
+  }
+
+  var matrix = []
+
+  // Init matrix
+  for (var i = 0; i < keys.length; i++) {
+    matrix.push([])
+    for (var j = 0; j < keys.length; j++) {
+      matrix[i].push(0)
+    }
+  }
+
+  var prevTarget = null
+  var prevTime = null
+  for (var i = 0; i < data.length; i++) {
+    if (prevTarget === null || prevTime === null) {
+      prevTarget = data[i].target
+      prevTime = data[i].date
+    }
+
+    // Inner
+    if (!(_.isEqual(prevTarget, data[i].target)) || i === data.length - 1) {
+      var fromIndex = getKeyIndex(prevTarget, keys)
+      var toIndex = getKeyIndex(data[i].target, keys)
+
+      var elapsed = data[i].date - prevTime
+
+      matrix[fromIndex][toIndex] += elapsed / 1000
+      prevTarget = data[i].target
+      prevTime = data[i].date
+    }
+  }
+
+  return {
+    matrix: matrix,
+    keys: key
   }
 }

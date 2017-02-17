@@ -1,4 +1,5 @@
-function drawCircularActionSequence (data) {
+var fKey = true
+function drawCircularActionSequence (data, rawData, bounds = false) {
   var svg = d3.select('#as')
   var width = svg.node().parentNode.offsetWidth
   var height = +svg.attr('height')
@@ -6,14 +7,22 @@ function drawCircularActionSequence (data) {
   var outerRadius = Math.min(width, height) * 0.5 - 40
   var innerRadius = outerRadius - 30
 
+  var matrix = data.outerMatrix
+  var keys = data.outerKeys
+  if (fKey !== null) {
+    // var obj = generateActionSequence(rawData, bounds, 'pageChanged')
+    // matrix = obj.matrix
+    // keys = obj.keys
+  }
+
   svg.selectAll('*').remove() // Doing this as temp patch job
 
   var arcTooltipFunction = function (d, i) {
-    return data.outerKeys[d.index] + ': ' + d.value + 's'
+    return keys[d.index] + ': ' + d.value + 's'
   }
 
   var chordTooltipFunction = function (d, i) {
-    var text = data.outerKeys[d.source.index] + ': ' + d.source.value + 's to ' + data.outerKeys[d.target.index] + ': ' + d.target.value + 's'
+    var text = keys[d.source.index] + ': ' + d.source.value + 's to ' + keys[d.target.index] + ': ' + d.target.value + 's'
     return text
   }
 
@@ -33,45 +42,28 @@ function drawCircularActionSequence (data) {
       .padAngle(0.05)
       .sortSubgroups(d3.descending)
 
-  var outerArc = d3.arc()
+  var arc = d3.arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius)
-
-  var middleArc = d3.arc()
-      .innerRadius(innerRadius - 30)
-      .outerRadius(innerRadius)
-
-  var innerArc = d3.arc()
-      .innerRadius(innerRadius - 60)
-      .outerRadius(innerRadius - 30)
 
   var ribbon = d3.ribbon()
       .radius(innerRadius)
 
-  var outerColors = d3.scaleOrdinal(d3.schemeCategory20 )
-      .domain(data.outerKeys)
-
-  var middleColors = d3.scaleOrdinal(d3.schemeCategory20b  )
-      .domain(data.middleKeys)
-
-  var innerColors = d3.scaleSequential(d3.interpolateRainbow)
-    .domain([0, data.innerKeys.length])
-
-  // Outer Arc
-  var outerG = svg.append('g')
+  // Arc
+  var g = svg.append('g')
       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-      .datum(chord(data.outerMatrix))
+      .datum(chord(matrix))
 
-  var outerGroup = outerG.append('g')
+  var group = g.append('g')
       .attr('class', 'groups')
     .selectAll('g')
     .data(function(chords) { return chords.groups })
       .enter().append('g')
 
-  var arcs = outerGroup.append('path')
-    .attr('d', outerArc)
-    .attr('id', function (d) { return data.outerKeys[d.index] })
-    .attr('class', function (d) { return data.outerKeys[d.index] })
+  var arcs = group.append('path')
+    .attr('d', arc)
+    .attr('id', function (d) { return keys[d.index] })
+    .attr('class', function (d) { return keys[d.index] })
     .on('mouseenter', function (d) {
       arcTip.show(d3.event, d)
 
@@ -98,63 +90,28 @@ function drawCircularActionSequence (data) {
       ribbons.attr('fill-opacity', 0.67)
     })
 
-  var arcText = outerGroup.append('text')
+  // Arc text
+  var arcText = group.append('text')
     .attr('x', 6)
     .attr('dy', 15)
 
   arcText.append('textPath')
-    .attr('xlink:href', function (d) { return '#' + data.outerKeys[d.index] })
-    .text(function (d) { return data.outerKeys[d.index] })
+    .attr('xlink:href', function (d) { return '#' + keys[d.index] })
+    .text(function (d) { return keys[d.index] })
 
   arcText.filter(function (d) {
     return arcs._groups[0][d.index].getTotalLength() / 2 - 16 < this.getComputedTextLength()
   }).remove()
 
-  // Middle Arc
-  // var middleG = svg.append('g')
-  //     .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-  //     .datum(chord(data.middleMatrix))
-  //
-  // var middleGroup = middleG.append('g')
-  //     .attr('class', 'groups')
-  //   .selectAll('g')
-  //   .data(function(chords) { return chords.groups })
-  //     .enter().append('g')
-  //
-  // var middleArcs = middleGroup.append('path')
-  //   .attr('d', middleArc)
-  //   .attr('fill', function (d) { return middleColors(data.middleKeys[d.index]) })
-  //   .on('mouseenter', function (d, i) {})
-  //   .on('mousemove', function (d, i) {})
-  //   .on('mouseout', function (d, i) {})
-  //
-  // // Inner Arc
-  // var innerG = svg.append('g')
-  //     .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-  //     .datum(chord(data.innerMatrix))
-  //
-  // var innerGroup = innerG.append('g')
-  //     .attr('class', 'groups')
-  //   .selectAll('g')
-  //   .data(function(chords) { return chords.groups })
-  //     .enter().append('g')
-  //
-  // var innerArcs = innerGroup.append('path')
-  //   .attr('d', innerArc)
-  //   .attr('fill', function (d) { return innerColors(d.index) })
-  //   .on('mouseenter', function (d, i) {})
-  //   .on('mousemove', function (d, i) {})
-  //   .on('mouseout', function (d, i) {})
-
   // Render ribbons
-  var gRibbons = outerG.append('g')
+  var gRibbons = g.append('g')
       .attr('class', 'ribbons')
 
   var ribbons = gRibbons.selectAll('path')
     .data(function(chords) { return chords; })
     .enter().append('path')
       .attr('d', ribbon)
-      .attr('class', function (d) { return data.outerKeys[d.source.index] })
+      .attr('class', function (d) { return keys[d.source.index] })
       .on('mouseenter', function (d) {
         chordTip.show(d3.event, d)
         ribbons.attr('fill-opacity', 0.05)
