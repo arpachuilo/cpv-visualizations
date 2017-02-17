@@ -1,3 +1,30 @@
+// NOTE: Each bbox is defined as [x, y, width, height]
+var bboxArray = [
+  {
+    key: 'detailHist',
+    bbox: [0, 0, 1066, 331]
+  }, {
+    key: 'overviewHist',
+    bbox: [0, 331, 1066, 223]
+  }, {
+    key: 'graph',
+    bbox: [0, 554, 1066, 526]
+  }, {
+    key: 'offices',
+    bbox: [1066, 0, 920, 272]
+  }, {
+    key: 'officesKeys',
+    bbox: [1066, 272, 920, 31]
+  }, {
+    key: 'info',
+    bbox: [1066, 303, 920, 192]
+  }, {
+    key: 'table',
+    bbox: [1066, 495, 920, 585]
+  }
+]
+
+
 function functor (f) {
   for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     args[_key - 1] = arguments[_key]
@@ -55,69 +82,6 @@ function scrollLeft () {
   }
 }
 
-// BOTH should be flat datasets
-function zipMouseEye (mouse, eye) {
-  // var subKeys = {
-  //   'officesCleared': 'offices',
-  //   'officeMouseEnter': 'offices',
-  //   'officeClicked': 'offices',
-  //   'sliderMoved': 'offices',
-  //   'accessTimeClicked': 'table',
-  //   'histogramBrushStart': 'overviewHist',
-  //   'histogramBrushEnd': 'overviewHist',
-  //   'headerClicked': 'table',
-  //   'rowClicked': 'table',
-  //   'rowMouseOver': 'table',
-  //   'tableToggleSelected': 'table',
-  //   'pageChange': 'table',
-  //   'histogramBarClick': 'detailHist',
-  //   'histogramBarMouseEnter': 'detailHist',
-  //   'graphNodeMouseEnter': 'graph'
-  // }
-  //
-  // for (var i = 0; i < mouse.length; i++) {
-  //   var mouseAOI = subKeys[mouse[i].id]
-  //   var mouseTime = mouse[i].time
-  //   for (var j = 0; j < eye.length; j++) {
-  //     // approx for now - within 100ms
-  //     if ((eye[i].aoi === mouseAOI) && (moment(eye[i].time + 100) > mouseTime) && (moment(eye[i].time) <= mouseTime)) {
-  //       mouse[i].hit = true
-  //       break
-  //     }
-  //   }
-  // }
-  //
-  // var hits = 0
-  // for (var i = 0; i < mouse.length; i++) {
-  //   if (mouse[i].hit) hits++
-  // }
-  //
-  // console.log(hits + ' / ' + mouse.length)
-}
-
-function flattenData (data) {
-  var flat = []
-
-  Object.keys(data[0]).forEach(function (key) {
-    if (key !== 'id') {
-      data[0][key].forEach(function (d) {
-        // if (d.eventType !== 'click' && d.eventType !== 'brushStart' && d.eventType !== 'brushEnd' && d.eventType !== 'mouseup' && d.eventType !== 'keyup') {
-        if (true) {
-          d.id = key
-          d.time = moment(d.date)
-          flat.push(d)
-        }
-      })
-    }
-  })
-
-  flat.sort(function (a, b) {
-    return a.time - b.time
-  })
-
-  return flat;
-}
-
 function timeBinData (data, numBins = 20) {
   var subKeys = {
     'officesCleared': 'offices',
@@ -138,7 +102,7 @@ function timeBinData (data, numBins = 20) {
   }
 
   var timeExtent = d3.extent(data, function (d) {
-    return d.time
+    return d.date
   })
 
   var elapsedTime = timeExtent[1] - timeExtent[0]
@@ -148,8 +112,8 @@ function timeBinData (data, numBins = 20) {
   for (var i = 1; i <= numBins; i++) {
     initBins.push(
       data.filter(function (d) {
-        return timeExtent[0] + interval * (i - 1) <= d.time &&
-          d.time < timeExtent[0] + interval * i &&
+        return timeExtent[0] + interval * (i - 1) <= d.date &&
+          d.date < timeExtent[0] + interval * i &&
           d.id !== 'mouseEnter'
       })
     )
@@ -179,9 +143,9 @@ function timeBinData (data, numBins = 20) {
 
 function convertDataForCoverage (data, bounds = false) {
   // Filter data
-  var data = data.filter(function (d) {
+  data = data.filter(function (d) {
     return (bounds ? (
-      bounds[0] <= d.time && d.time <= bounds[1]
+      bounds[0] <= d.date && d.date <= bounds[1]
     ) : true) && d.id !== 'mouseEnter'
   })
 
@@ -226,17 +190,17 @@ function convertDataForCoverage (data, bounds = false) {
   for (var i = 0; i < data.length; i++) {
     if (previousFilter === null || previousTime === null) {
       previousFilter = data[i].filters
-      previousTime = data[i].time
+      previousTime = data[i].date
     }
     if (!(_.isEqual(previousFilter, data[i].filters)) || i === data.length - 1) {
       var fromIndex = getFilterIndex(previousFilter)
       var toIndex = getFilterIndex(data[i].filters)
 
-      timeLapsed = data[i].time - previousTime
+      timeLapsed = data[i].date - previousTime
 
       matrix[fromIndex][toIndex] += timeLapsed / 1000
       previousFilter = data[i].filters
-      previousTime = data[i].time
+      previousTime = data[i].date
     }
   }
 
@@ -248,9 +212,9 @@ function convertDataForCoverage (data, bounds = false) {
 
 function convertDataForAOI (data, bounds = false) {
   // Filter data
-  var data = data.filter(function (d) {
+  data = data.filter(function (d) {
     return (bounds ? (
-      bounds[0] <= d.time && d.time <= bounds[1]
+      bounds[0] <= d.date && d.date <= bounds[1]
     ) : true) && d.id !== 'mouseEnter'
   })
 
@@ -288,21 +252,23 @@ function convertDataForAOI (data, bounds = false) {
     }
   }
 
-  var previousId = null
+  var previousKey = null
   var previousTime = null
   for (let i = 0; i < data.length; i++) {
-    if (previousId === null || previousTime === null) {
-      previousId = data[i].id
-      previousTime = data[i].time
+    if (previousKey === null || previousTime === null) {
+      previousKey = subKeys[data[i].id]
+      previousTime = data[i].date
     }
-    if (previousId !== data[i].id || i === data.length - 1) {
-      timeLapsed = data[i].time - previousTime
+    if (previousKey !== subKeys[data[i].id] || data.length - 1 === i) {
+      timeLapsed = data[i].date - previousTime
 
-      var fromIndex = +keys[subKeys[previousId]]
+      var fromIndex = +keys[previousKey]
       var toIndex = +keys[subKeys[data[i].id]]
+
       matrix[fromIndex][toIndex] += timeLapsed / 1000
-      previousId = data[i].id
-      previousTime = data[i].time
+
+      previousKey = subKeys[data[i].id]
+      previousTime = data[i].date
     }
   }
 
@@ -311,9 +277,9 @@ function convertDataForAOI (data, bounds = false) {
 
 function convertDataForActionSequence (data, bounds = false) {
   // Filter data
-  var data = data.filter(function (d) {
+  data = data.filter(function (d) {
     return (bounds ? (
-      bounds[0] <= d.time && d.time <= bounds[1]
+      bounds[0] <= d.date && d.date <= bounds[1]
     ) : true) && d.id !== 'mouseEnter'
   })
 
@@ -412,11 +378,11 @@ function convertDataForActionSequence (data, bounds = false) {
   for (var i = 0; i < data.length; i++) {
     if (previousOuter === null || previousOuterTime === null) {
       previousOuter = data[i].id
-      previousOuterTime = data[i].time
+      previousOuterTime = data[i].date
       previousMiddle = data[i].eventType
-      previousMiddleTime = data[i].time
+      previousMiddleTime = data[i].date
       previousInner = data[i].target
-      previousInnerTime = data[i].time
+      previousInnerTime = data[i].date
     }
 
     // Outer
@@ -424,11 +390,11 @@ function convertDataForActionSequence (data, bounds = false) {
       var fromIndex = getKeyIndex(previousOuter, outerKeys)
       var toIndex = getKeyIndex(data[i].id, outerKeys)
 
-      var outerTimeElapsed = data[i].time - previousOuterTime
+      var outerTimeElapsed = data[i].date - previousOuterTime
 
       outerMatrix[fromIndex][toIndex] += outerTimeElapsed / 1000
       previousOuter = data[i].id
-      previousOuterTime = data[i].time
+      previousOuterTime = data[i].date
     }
 
     // Middle
@@ -436,10 +402,10 @@ function convertDataForActionSequence (data, bounds = false) {
       var fromIndex = getKeyIndex(previousMiddle, middleKeys)
       var toIndex = getKeyIndex(data[i].eventType, middleKeys)
 
-      middleTimeElapsed = data[i].time - previousMiddleTime
+      middleTimeElapsed = data[i].date - previousMiddleTime
       middleMatrix[fromIndex][toIndex] += middleTimeElapsed / 1000
       previousMiddle = data[i].eventType
-      previousMiddleTime = data[i].time
+      previousMiddleTime = data[i].date
     }
 
     // Inner
@@ -447,11 +413,11 @@ function convertDataForActionSequence (data, bounds = false) {
       var fromIndex = getKeyIndex(previousInner, innerKeys)
       var toIndex = getKeyIndex(data[i].target, innerKeys)
 
-      var innerTimeElapsed = data[i].time - previousInnerTime
+      var innerTimeElapsed = data[i].date - previousInnerTime
 
       innerMatrix[fromIndex][toIndex] += innerTimeElapsed / 1000
       previousInner = data[i].target
-      previousInnerTime = data[i].time
+      previousInnerTime = data[i].date
     }
   }
 

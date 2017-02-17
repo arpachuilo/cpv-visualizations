@@ -3,8 +3,8 @@ body {
 }
 
 #user-video {
-  width: 1280;
-  height: auto;
+  width: 1280px;
+  height: 720px;
   position: absolute;
   top: 0;
   left: 0;
@@ -15,23 +15,16 @@ body {
   top: 0;
   left: 0;
   z-index: 10;
+  pointer-events: none;
 }
 
-.navbar-list {
-  list-style: none;
-  margin-bottom: 0;
-}
-
-.navbar-item {
-  position: relative;
-  float: left;
-}
-
-.navbar-link {
-  text-transform: uppercase;
-  margin-right: 32px;
-  font-weight: 600;
-  font-size: 24px;
+#bbox-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+  fill-opacity: 0.50;
 }
 
 svg {
@@ -48,6 +41,7 @@ svg {
   --graph-color: #b2df8a;
   --table-color: #1f78b4;
   --offices-color: #a6cee3;
+  --info-color: #e31a1c;
   --stroke-color: #000000;
   --stroke-opacity: 0.1;
   --officesCleared-color: #1676B6;
@@ -66,6 +60,13 @@ svg {
   --histogramBarClick-color: #F9B5D2;
   --histogramBarMouseEnter-color: #7F7F7F;
   --graphNodeMouseEnter-color: #C7C7C7;
+}
+
+.info, .info * {
+  fill: var(--info-color);
+  background-color: var(--info-color);
+  stroke: var(--stroke-color);
+  stroke-opacity: var(--stroke-opacity);
 }
 
 .overviewHist, .overviewHist * {
@@ -232,16 +233,6 @@ svg {
   margin-right: 1px;
   width: 1em;
   height: 1em;
-}
-
-.mouse circle {
-  fill: yellow;
-  fill-opacity: 0.05;
-}
-
-.eye circle {
-  fill: red;
-  fill-opacity: 0.05;
 }
 
 .tooltip {

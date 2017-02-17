@@ -3,19 +3,24 @@
   <meta charset='utf-8'>
   <script src='https://d3js.org/d3.v4.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
+
+  <script src='./data/video-links.js'></script>
 
   <script src='./scripts/util.js'></script>
   <script src='./scripts/Tooltip.js'></script>
   <script src='./scripts/HeatPointChart.js'></script>
-  <script src='./scripts/StackedBarChart.js'></script>
+  <script src='./scripts/drawBbox.js'></script>
   <script src='./scripts/VideoHeatmap.js'></script>
+  <script src='./scripts/StackedBarChart.js'></script>
   <script src='./scripts/CircularAOI.js'></script>
   <script src='./scripts/CircularDataCoverage.js'></script>
   <script src='./scripts/CircularActionSequences.js'></script>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css'>
   <link rel='stylesheet' href='style.css'>
 
 </head>
@@ -59,23 +64,26 @@
     </div>
   </div>
 
-  <!-- <div class='row' style='position: relative; margin: 0 auto;'>
-    <video id='user-video'></video>
-    <canvas id='video-overlay'></canvas>
-  </div> -->
+  <div class='row'>
+    <div class='key' style='background-color: orange'></div><span>Eye</span>
+    <div class='key' style='background-color: green'></div><span>Mouse</span>
 
-  <!-- <div class='row'>
-    <div style='width: 960; height: 540; background:#000; position: relative;'>
-      <img style='position: absolute' src='app.png' width='960' height='540' />
-      <svg style='position: absolute' id='imgOverlay' width='960' height='540'></svg>
+    <div id='video-container' class='row' style='position: relative; margin: 0 auto;'>
+      <video id='user-video'>
+        <source id='user-video-source' type='video/mp4'></source>
+      </video>
+      <!-- <svg id='bbox-overlay'></svg> -->
+      <canvas id='video-overlay'></canvas>
     </div>
-  </div> -->
+  </div>
 
   <script>
 
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
 
   var bounds = false
+
+  var videoHeatmap = VideoHeatmap(document.getElementById('video-overlay'), document.getElementById('user-video'))
   var stackedChart = StackedBarChart(d3.select('#timeControl'))
     .keys(classKeys)
     .onBrushDrag(function (e, extent) {
@@ -87,30 +95,32 @@
       drawCharts()
     })
 
-  // var videoHeatmap = VideoHeatmap(d3.select('#video-overlay'), document.getElementById('user-video'))
-
-  var loadedEyeData = []
-  var loadedMouseData = []
+  var eyeData = []
+  var mouseData = []
 
   document.addEventListener('data-loaded', function () {
-    // var video = document.getElementById('user-video')
+    var video = document.getElementById('user-video')
     // video.pause()
-    // video.setAttribute('src', 'data/' + document.getElementById('dataset').value + '.mp4')
-    // videoHeatmap
-    //   .setEyeData(loadedEyeData)
-    //   .setMouseData(loadedMouseData)
 
+    var videoSource = document.getElementById('user-video-source')
+    videoSource.setAttribute('src', videoLinks[document.getElementById('dataset').value])
+    videoHeatmap
+      .setEyeData(eyeData)
+      .setMouseData(mouseData)
+
+
+    // video.play()
     bounds = false
     stackedChart
-      .data(timeBinData(loadedMouseData, 90))
+      .data(timeBinData(mouseData, 90))
       .update()
     drawCharts()
   })
 
   function drawCharts () {
-    drawCircularAOI(convertDataForAOI(loadedMouseData, bounds), classKeys)
-    drawDataCoverage(convertDataForCoverage(loadedMouseData, bounds))
-    drawCircularActionSequence(convertDataForActionSequence(loadedMouseData, bounds))
+    drawCircularAOI(convertDataForAOI(mouseData, bounds), classKeys)
+    drawDataCoverage(convertDataForCoverage(mouseData, bounds))
+    drawCircularActionSequence(convertDataForActionSequence(mouseData, bounds))
   }
 
   function onDatasetChange () {
@@ -118,17 +128,17 @@
   }
 
   function loadData (value) {
-    d3.text('data/converted-' + value + '.csv', function(text) {
-      // loadedEyeData = d3.csvParse('status,x,y,time,aoi\n' + text)
-      d3.json('data/' + value + '.json', function (mouse) {
-        loadedMouseData = flattenData(mouse)
-        console.log(loadedMouseData[0].time._i)
-        // zipMouseEye(loadedMouseData, loadedEyeData)
+    d3.text('data/eye/' + value + '.csv', function(eye) {
+      eyeData = d3.csvParse('status,x,y,time,aoi\n' + eye)
+      d3.json('data/mouse/' + value + '.json', function (mouse) {
+        mouseData = mouse
+
         document.dispatchEvent(new Event('data-loaded'))
       })
     })
   }
 
   loadData('CPV-A')
+  // drawBbox(bboxArray)
   </script>
 </body>

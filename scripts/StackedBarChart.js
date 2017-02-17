@@ -26,7 +26,7 @@ function StackedBarChart(selection, brushable = true) {
     //Otherwise, create the skeletal chart
     var gEnter = svg.enter().append('svg')
 
-    x = d3.scaleTime()
+    x = d3.scaleLinear()
     y = d3.scaleLinear()
 
     gEnter
@@ -45,7 +45,7 @@ function StackedBarChart(selection, brushable = true) {
 
     if (brushable) {
       var brushTipFunction = function (d) {
-        var text = d[0] + ' to ' + d[1]
+        var text = moment.duration(Math.round(d[0]), 'ms').format('m:ss') + ' to ' + moment.duration(Math.round(d[1]), 'ms').format('m:ss')
         return text
       }
 
@@ -112,7 +112,9 @@ function StackedBarChart(selection, brushable = true) {
 
     gXaxis
       .attr('transform', 'translate(' + margin.left + ',' + chartHeight + ')')
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x).tickFormat(function (t) {
+        return moment.duration(t, 'ms').format('m:ss')
+      }))
 
     gYaxis
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
