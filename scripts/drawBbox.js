@@ -1,6 +1,6 @@
 function drawBbox (data) {
-  var width = 1280
-  var height = 720
+  var width = d3.select('#app-img').node().offsetWidth
+  var height = 340
 
   var svg = d3.select('#bbox-overlay')
     .attr('width', width)
@@ -20,10 +20,31 @@ function drawBbox (data) {
       return d.key
     })
 
+  var aoi = d3.select('#aoi')
   bboxes.enter().append('rect')
     .attr('class', function (d) { return d.key })
     .attr('x', function (d) { return x(d.bbox[0]) })
     .attr('y', function (d) { return y(d.bbox[1]) })
     .attr('width', function (d) { return x(d.bbox[2]) })
     .attr('height', function (d) { return x(d.bbox[3]) })
+    .on('mouseover', function (d) {
+      d3.select(this).attr('fill-opacity', 0.8)
+
+      aoi.select('.ribbons').selectAll('path')
+        .filter(function (f) {
+          return d3.select(this).attr('class') !== d.key
+        }).attr('fill-opacity', 0.05)
+      aoi.select('.groups').selectAll('path')
+        .filter(function (f) {
+          return d3.select(this).attr('class') !== d.key
+        }).attr('fill-opacity', 0.1)
+    })
+    .on('mouseout', function (d) {
+      d3.select(this).attr('fill-opacity', 0.5)
+
+      aoi.select('.ribbons').selectAll('path')
+        .attr('fill-opacity', 0.67)
+      aoi.select('.groups').selectAll('path')
+        .attr('fill-opacity', 1)
+    })
 }

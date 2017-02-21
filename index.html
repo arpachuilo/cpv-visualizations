@@ -17,16 +17,23 @@
   <script src='./scripts/CircularAOI.js'></script>
   <script src='./scripts/CircularDataCoverage.js'></script>
   <script src='./scripts/CircularActionSequences.js'></script>
+  <script src='./scripts/LineChart.js'></script>
+
 
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css'>
   <link rel='stylesheet' href='style.css'>
 
+  <title>Cyber Prov Vis</title>
 </head>
 <body onresize='resize()'>
 
+  <div id='loader' class='loading'>Loading&#8230;</div>
+
   <div class='row'>
+
+    <!-- dataset picker -->
     <div class='row'>
       <span>Dataset: </span>
       <select id='dataset' onchange='onDatasetChange()'>
@@ -44,7 +51,25 @@
     </div>
 
     <div class='row'>
-      <div class='twelve columns' id='timeControl'></div>
+      <div class='four columns'>
+        <div id='app-context-container'>
+          <div id='app-context'>
+            <img id='app-img' src='app.png' />
+            <svg id='bbox-overlay'></svg>
+          </div>
+        </div>
+      </div>
+      <div class='eight columns'>
+        <div class='row'>
+          <div id='interactionStackedChart'></div>
+        </div>
+        <div class='row'>
+          <div id='eyeStackedChart'></div>
+        </div>
+        <div class='row'>
+          <svg height='60' id='dataCoverageSparkLine'></svg>
+        </div>
+      </div>
     </div>
 
     <div class='row'>
@@ -65,19 +90,15 @@
     </div>
   </div>
 
-  <div class='row'>
-    <div class='key' style='background-color: orange'></div><span>Eye</span>
-    <div class='key' style='background-color: green'></div><span>Mouse</span>
-
+  <!-- video heatmap -->
+  <!-- <div class='row'>
     <div id='video-container' class='row' style='position: relative; margin: 0 auto;'>
-      <!-- <video id='user-video'>
+      <video id='user-video'>
         <source id='user-video-source' type='video/mp4'></source>
-      </video> -->
-      <img id='app-img' src='app.png' />
-      <svg id='bbox-overlay'></svg>
-      <!-- <canvas id='video-overlay'></canvas> -->
+      </video>
+      <canvas id='video-overlay'></canvas>
     </div>
-  </div>
+  </div> -->
 
   <script>
 
@@ -86,8 +107,21 @@
   var bounds = false
 
   // var videoHeatmap = VideoHeatmap(document.getElementById('video-overlay'), document.getElementById('user-video'))
-  var stackedChart = StackedBarChart(d3.select('#timeControl'))
+  var stackedInteractionChart = StackedBarChart(d3.select('#interactionStackedChart'))
     .keys(classKeys)
+    .title('Interaction AOI')
+    .onBrushDrag(function (e, extent) {
+      bounds = extent
+      drawCharts()
+    })
+    .onBrushClick(function () {
+      bounds = false
+      drawCharts()
+    })
+
+  var stackedEyeChart = new StackedBarChart(d3.select('#eyeStackedChart'))
+    .keys(classKeys)
+    .title('Gaze AOI')
     .onBrushDrag(function (e, extent) {
       bounds = extent
       drawCharts()
@@ -102,7 +136,10 @@
 
   function resize() {
     _.delay(function () {
-      stackedChart
+      stackedInteractionChart
+        .resizeFunc()
+        .update()
+      stackedEyeChart
         .resizeFunc()
         .update()
       drawCharts()
@@ -122,10 +159,16 @@
     //
     // video.play()
     bounds = false
-    stackedChart
-      .data(timeBinData(mouseData, 90))
+    stackedInteractionChart
+      .data(timeBinInteractionData(mouseData, 90))
       .update()
+    stackedEyeChart
+      .data(timeBinEyeData(eyeData, 90))
+      .update()
+    drawLineChart(numFiltersOverTime(mouseData))
     drawCharts()
+
+    document.getElementById('loader').style.display = 'none'
   })
 
   function drawCharts () {
@@ -139,8 +182,10 @@
   }
 
   function loadData (value) {
+    document.getElementById('loader').style.display = 'block'
     d3.text('data/eye/' + value + '.csv', function(eye) {
       eyeData = d3.csvParse('status,x,y,time,aoi\n' + eye)
+      timeBinEyeData(eyeData)
       d3.json('data/mouse/' + value + '.json', function (mouse) {
         mouseData = mouse
 

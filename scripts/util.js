@@ -79,7 +79,7 @@ function scrollLeft () {
   }
 }
 
-function timeBinData (data, numBins = 20) {
+function timeBinInteractionData (data, numBins = 20) {
   var subKeys = {
     'officesCleared': 'offices',
     'officeMouseEnter': 'offices',
@@ -136,6 +136,90 @@ function timeBinData (data, numBins = 20) {
     }
   }
   return bins
+}
+
+function timeBinEyeData (data, numBins = 20) {
+
+  var timeExtent = d3.extent(data, function (d) {
+    return +d.time
+  })
+
+  var elapsedTime = timeExtent[1] - timeExtent[0]
+  var interval = elapsedTime / numBins
+
+  var initBins = []
+  for (var i = 1; i <= numBins; i++) {
+    initBins.push(
+      data.filter(function (d) {
+        return timeExtent[0] + interval * (i - 1) <= (+d.time) &&
+          (+d.time) < timeExtent[0] + interval * i &&
+          d.aoi !== 'none' &&
+          d.aoi !== 'officesKey' &&
+          d.aoi !== 'info'
+      })
+    )
+  }
+
+  var bins = []
+  for (var i = 0; i < initBins.length; i++) {
+    bins.push({
+      'startTime': timeExtent[0] + interval * i,
+      'endTime': timeExtent[0] + interval * (i + 1),
+      'overviewHist': 0,
+      'detailHist': 0,
+      'graph': 0,
+      'table': 0,
+      'offices': 0,
+      'total': 0
+    })
+
+    for (var j = 0; j < initBins[i].length; j++) {
+      var key = initBins[i][j].aoi
+      bins[i][key] += 1
+      bins[i].total += 1
+    }
+  }
+
+  return bins
+}
+
+function numFiltersOverTime (data) {
+  var filter_arr = []
+
+  function getNumberOfFilters (obj) {
+    var total = 0
+    _.forOwn(obj, function(value, key) {
+
+      if (key === 'AccessTime') {
+        total += 1
+      } else {
+        value.forEach(function(v, i) {
+          total += 1
+        })
+      }
+    })
+    return total
+  }
+
+  for (var i = 0; i < data.length; i++) {
+
+    var exist = false
+    if (filter_arr.length > 0) {
+      if (_.isEqual(filter_arr[filter_arr.length - 1].filters, data[i].filters)) {
+        exist = true
+      }
+    }
+
+    if (!exist) {
+      filter_arr.push({
+        filters: data[i].filters,
+        numFilters: getNumberOfFilters(data[i].filters),
+        time: data[i].date
+      })
+    }
+  }
+
+  return filter_arr
 }
 
 function convertDataForCoverage (data, bounds = false) {
