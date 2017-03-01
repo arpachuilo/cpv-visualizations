@@ -1,4 +1,4 @@
-function drawLineChart (data) {
+function drawLineChart (data, xDomain = [0, 90]) {
   var svg = d3.select('#dataCoverageSparkLine')
   var width = svg.node().parentNode.offsetWidth
   var height = +svg.attr('height')

@@ -2,22 +2,40 @@
 var bboxArray = [
   {
     key: 'detailHist',
-    bbox: [0, 0, 1085, 331]
+    bbox: [0, 0, 1085, 331],
+    isBelow: false,
+    isRight: false,
+    isBottom: false
   }, {
     key: 'overviewHist',
-    bbox: [0, 331, 1085, 223]
+    bbox: [0, 331, 1085, 223],
+    isBelow: true,
+    isRight: false,
+    isBottom: false
   }, {
     key: 'graph',
-    bbox: [0, 554, 1085, 526]
+    bbox: [0, 554, 1085, 526],
+    isBelow: true,
+    isRight: false,
+    isBottom: true
   }, {
     key: 'offices',
-    bbox: [1085, 0, 901, 303]
+    bbox: [1085, 0, 835, 303],
+    isBelow: false,
+    isRight: true,
+    isBottom: false
   }, {
     key: 'info',
-    bbox: [1085, 303, 901, 192]
+    bbox: [1085, 303, 835, 192],
+    isBelow: true,
+    isRight: true,
+    isBottom: false
   }, {
     key: 'table',
-    bbox: [1085, 495, 901, 585]
+    bbox: [1085, 495, 835, 585],
+    isBelow: true,
+    isRight: true,
+    isBottom: true
   }
 ]
 
@@ -98,9 +116,9 @@ function timeBinInteractionData (data, numBins = 20) {
     'graphNodeMouseEnter': 'graph'
   }
 
-  var timeExtent = d3.extent(data, function (d) {
-    return d.date
-  })
+  var timeExtent = [0, d3.max(data, function (d) {
+    return +d.date
+  })]
 
   var elapsedTime = timeExtent[1] - timeExtent[0]
   var interval = elapsedTime / numBins
@@ -140,9 +158,9 @@ function timeBinInteractionData (data, numBins = 20) {
 
 function timeBinEyeData (data, numBins = 20) {
 
-  var timeExtent = d3.extent(data, function (d) {
+  var timeExtent = [0, d3.max(data, function (d) {
     return +d.time
-  })
+  })]
 
   var elapsedTime = timeExtent[1] - timeExtent[0]
   var interval = elapsedTime / numBins

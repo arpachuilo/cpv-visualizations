@@ -20,6 +20,8 @@ for key in jsonData[0]:
 # Sort data
 data.sort(key=lambda x: x.get('date'))
 
+# Add (x, y) to histogramBrushStart, histogramBrushEnd, pageChange, sliderMoved, headerClicked, tableToggleSelected
+
 # Zero base time
 zero = dateutil.parser.parse(data[0].get('date'))
 zero = int(time.mktime(zero.timetuple())) * 1000

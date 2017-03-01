@@ -79,6 +79,8 @@ function drawCircularActionSequence (data, rawData, bounds = false) {
       arcs.filter(function(f) {
         return !(attachedArcIds.includes(f.index))
       }).attr('fill-opacity', 0.1)
+
+      drawInteractions(keys[d.index])
     })
     .on('mousemove', function (d) {
       arcTip.show(d3.event, d)
@@ -88,6 +90,8 @@ function drawCircularActionSequence (data, rawData, bounds = false) {
       arcs.attr('fill-opacity', 1)
 
       ribbons.attr('fill-opacity', 0.67)
+
+      clearInteractions()
     })
 
   // Arc text
@@ -120,6 +124,8 @@ function drawCircularActionSequence (data, rawData, bounds = false) {
         arcs.filter(function (f) {
           return (d.source.index !== f.index) && (d.target.index !== f.index)
         }).attr('fill-opacity', 0.1)
+
+        drawTwoWayInteractions(keys[d.source.index], keys[d.target.index])
       })
       .on('mousemove', function (d) {
         chordTip.show(d3.event, d)
@@ -129,5 +135,7 @@ function drawCircularActionSequence (data, rawData, bounds = false) {
 
         ribbons.attr('fill-opacity', 0.67)
         arcs.attr('fill-opacity', 1)
+
+        clearInteractions()
       })
 }

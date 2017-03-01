@@ -73,6 +73,9 @@ function drawCircularAOI (matrix, keys) {
       arcs.filter(function(f) {
         return !(attachedArcIds.includes(f.index))
       }).attr('fill-opacity', 0.1)
+
+      d3.select('#bbox-overlay .' + className(d.index))
+        .attr('fill-opacity', 0.5)
     })
     .on('mousemove', function (d, i) {
       arcTip.show(d3.event, d, i)
@@ -82,6 +85,9 @@ function drawCircularAOI (matrix, keys) {
       arcs.attr('fill-opacity', 1)
 
       ribbons.attr('fill-opacity', 0.67)
+
+      d3.selectAll('#bbox-overlay rect')
+        .attr('fill-opacity', 0)
     })
 
   var arcText = group.append('text')
@@ -112,6 +118,12 @@ function drawCircularAOI (matrix, keys) {
         arcs.filter(function (f) {
           return (d.source.index !== f.index) && (d.target.index !== f.index)
         }).attr('fill-opacity', 0.1)
+
+        d3.select('#bbox-overlay .' + className(d.source.index))
+          .attr('fill-opacity', 0.5)
+
+        d3.select('#bbox-overlay .' + className(d.target.index))
+          .attr('fill-opacity', 0.5)
       })
       .on('mousemove', function (d, i) {
         chordTip.show(d3.event, d, i)
@@ -121,5 +133,8 @@ function drawCircularAOI (matrix, keys) {
         ribbons.attr('fill-opacity', 0.67)
 
         arcs.attr('fill-opacity', 1)
+
+        d3.selectAll('#bbox-overlay rect')
+          .attr('fill-opacity', 0)
       })
 }

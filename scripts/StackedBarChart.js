@@ -1,4 +1,4 @@
-function StackedBarChart(selection, brushable = true) {
+function StackedBarChart(selection, brushable = false) {
   var selection = selection
   var data = []
   var keys = []
@@ -18,10 +18,16 @@ function StackedBarChart(selection, brushable = true) {
   var onBrushEnd = function (d) {}
   var onBrushClick = function (d) {}
 
+  var xAxisEnabled = true
+  var yAxisEnabled = true
+
   // init chart here
   var svg, gChart, gXaxis, gYaxis, gTitle, gBrush, brush
   var chartWidth, chartHeight
   var x, y
+
+  var xDomain = [0, 90]
+
   selection.each(function (d) {
     //Select the svg element, if it exists
     svg = d3.select(this).selectAll('svg').data([d])
@@ -95,10 +101,7 @@ function StackedBarChart(selection, brushable = true) {
     chartHeight = height - margin.bottom - margin.top
 
     x = x
-      .domain([
-        d3.min(data, function (d) { return d.startTime }),
-        d3.max(data, function (d) { return d.endTime })
-      ])
+      .domain(xDomain)
       .range([0, chartWidth])
 
     y = y
@@ -112,23 +115,27 @@ function StackedBarChart(selection, brushable = true) {
       .selectAll('rect')
       .data(function(d) { return d })
       .enter().append('rect')
-        .attr('x', function (d) { return  x(d.data.startTime )})
+        .attr('x', function (d) { return  x(d.data.startTime) })
         .attr('y', function (d) { return y(d[1]) })
         .attr('height', function (d) { return y(d[0]) - y(d[1]) })
-        .attr('width', function (d, i) { return width / data.length })
+        .attr('width', function (d, i) { return chartWidth / data.length })
 
     gTitle.append('text')
       .text(title)
 
-    gXaxis
-      .attr('transform', 'translate(' + margin.left + ',' + (height - margin.bottom) + ')')
-      .call(d3.axisBottom(x).tickFormat(function (t) {
-        return moment.duration(t, 'ms').format('m:ss')
-      }))
+    if (xAxisEnabled) {
+      gXaxis
+        .attr('transform', 'translate(' + margin.left + ',' + (height - margin.bottom) + ')')
+        .call(d3.axisBottom(x).tickFormat(function (t) {
+          return moment.duration(t, 'ms').format('m:ss')
+        }))
+    }
 
-    gYaxis
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      .call(d3.axisLeft(y))
+    if (yAxisEnabled) {
+      gYaxis
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .call(d3.axisLeft(y))
+    }
 
     if (brushable) {
       gBrush
@@ -185,15 +192,40 @@ function StackedBarChart(selection, brushable = true) {
       .attr('x', x2)
   }
 
+  this.margin = function (_) {
+    if (!arguments.length) return margin
+    margin = _
+    return this
+  }
+
+  this.enableYAxis = function (_) {
+    if (!arguments.length) return yAxisEnabled
+    yAxisEnabled = _
+    return this
+  }
+
+  this.enableXAxis = function (_) {
+    if (!arguments.length) return xAxisEnabled
+    xAxisEnabled = _
+    return this
+  }
+
   this.title = function (_) {
     if (!arguments.length) return title
     title = _
+    this.resizeFunc()
     return this
   }
 
   this.data = function (_) {
     if (!arguments.length) return data
     data = _
+    return this
+  }
+
+  this.xDomain = function (_) {
+    if (!arguments.length) return xDomain
+    xDomain = _
     return this
   }
 
@@ -210,6 +242,12 @@ function StackedBarChart(selection, brushable = true) {
     d3.select(svg)
       .attr('width', width)
       .attr('height', height)
+
+    gChart
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+    gTitle
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
     return this
   }
 

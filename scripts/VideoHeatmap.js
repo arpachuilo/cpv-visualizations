@@ -13,7 +13,7 @@ function VideoHeatmap(canvas, video) {
   var paused = video.paused
   var trailTime = 5 * 1000
 
-  var r = 10
+  var r = 2
   var x = d3.scaleLinear()
     .domain([0, 1920])
     .range([0, canvas.width])
