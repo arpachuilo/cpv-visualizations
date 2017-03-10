@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<head>
+  <meta charset='utf-8'>
+  <script src='https://d3js.org/d3.v4.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
+
+  <script src='./data/video-links.js'></script>
+
+  <script src='./scripts/util.js'></script>
+  <script src='./scripts/Tooltip.js'></script>
+  <script src='./scripts/drawBbox.js'></script>
+  <script src='./scripts/StackedBarChart.js'></script>
+  <script src='./scripts/LineChart.js'></script>
+
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css'>
+  <link rel='stylesheet' href='style.css'>
+
+  <title>Cyber Prov Vis</title>
+</head>
+<body onresize='resize()'>
+
+  <div id='loader' class='loading'>Loading&#8230;</div>
+
+  <ul>
+    <li><a href='VideoHeatmap.html'>Video Heatmap</a></li>
+    <li><a href='OverviewDetail.html'>Overview + Detail</a></li>
+    <li><a class='active' href='Contextual.html'>Contextualized</a></li>
+    <li class='pull-right'>
+      <select class='dd' id='dataset' onchange='switchSet()'>
+        <option value='0'>CPV-A</option>
+        <option value='1'>CPV-B</option>
+        <option value='2'>CPV-C</option>
+        <option value='3'>CPV-D</option>
+        <option value='4'>CPV-E</option>
+        <option value='5'>CPV-F</option>
+        <option value='6'>CPV-G</option>
+        <option value='7'>CPV-H</option>
+        <option value='8'>CPV-I</option>
+        <option value='9'>CPV-J</option>
+      </select>
+    </li>
+  </ul>
+
+  <div class='row'>
+
+  </div>
+
+  <script>
+  var ids = ['CPV-A', 'CPV-B', 'CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-G', 'CPV-I', 'CPV-J']
+
+  var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
+
+  var bounds = false
+
+  var nbMargin = {
+    top: 12,
+    left: 45,
+    bottom: 0,
+    right: 0
+  }
+
+  var stackedInteractionChart = StackedBarChart(d3.select('#interactionStackedChart'))
+    .keys(classKeys)
+    .margin(nbMargin)
+    .enableXAxis(false)
+    .enableYAxis(false)
+    .title('Mouse AOI')
+
+  var stackedEyeChart = new StackedBarChart(d3.select('#eyeStackedChart'))
+    .keys(classKeys)
+    .margin(nbMargin)
+    .enableXAxis(false)
+    .enableYAxis(false)
+    .title('Eye AOI')
+
+  var aoiQuilt = new AOIQuilt(d3.select('#aoiQuilt'))
+    .clickHandler(function (index) {
+      selected = dataTable[index]
+
+      updateSet()
+    })
+
+  var dataTable = []
+  var selected = null
+
+  function resize() {
+    _.delay(function () {
+      stackedInteractionChart
+        .resizeFunc()
+        .update()
+      stackedEyeChart
+        .resizeFunc()
+        .update()
+    }, 500)
+  }
+
+  document.addEventListener('loaded-all', function () {
+    selected = dataTable[0]
+
+    aoiQuilt
+      .data(dataTable)
+      .update()
+
+    updateSet()
+    document.getElementById('loader').style.display = 'none'
+  })
+
+  function switchSet () {
+    selected = dataTable[+document.getElementById('dataset').value]
+
+    updateSet()
+  }
+
+  function updateSet () {
+    bounds = false
+    ioSetData(selected.loadedMouse)
+
+    stackedInteractionChart
+      .data(selected.mouseTimeBin)
+      .xDomain([0, selected.xMax])
+      .update()
+    stackedEyeChart
+      .data(selected.eyeTimeBin)
+      .xDomain([0, selected.xMax])
+      .update()
+
+    drawLineChart(selected.filterTimeBin, [0, selected.xMax])
+  }
+
+  function loadAll (values) {
+    document.getElementById('loader').style.display = 'block'
+
+    function loadHelper (index) {
+      var p = {}
+      p.index = index
+      p.id = values[index]
+      d3.text('data/eye/' + values[index] + '.csv', function(eye) {
+        p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
+        p.eyeTimeBin = timeBinEyeData(p.loadedEye, 90)
+        d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
+          p.loadedMouse = mouse
+          p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, 90)
+          p.filterTimeBin = numFiltersOverTime(p.loadedMouse)
+
+          p.xMax = Math.max(
+            d3.max(p.mouseTimeBin, function (d) { return d.endTime }),
+            d3.max(p.eyeTimeBin, function (d) { return d.endTime })
+          )
+
+          dataTable.push(p)
+
+          if (index === values.length - 1) {
+            document.dispatchEvent(new Event('loaded-all'))
+          } else {
+            loadHelper(index + 1)
+          }
+        })
+      })
+    }
+
+    loadHelper(0)
+  }
+
+  loadAll(ids)
+  </script>
+</body>

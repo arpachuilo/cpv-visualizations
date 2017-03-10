@@ -374,6 +374,53 @@ function convertDataForAOI (data, bounds = false) {
   return matrix
 }
 
+function convertDataForEyeAOI (data, bounds = false) {
+  // Filter data
+  data = data.filter(function (d) {
+    return (bounds ? (
+      bounds[0] <= +d.time && +d.time <= bounds[1]
+    ) : true) && d.aoi !== 'none' && d.aoi !== 'info' && d.aoi !== 'officesKey'
+  })
+
+  var keys = {
+    'overviewHist': 0,
+    'detailHist': 1,
+    'graph': 2,
+    'table': 3,
+    'offices': 4
+  }
+
+  var matrix = []
+  for (var i = 0; i < Object.keys(keys).length; i++) {
+    matrix.push([])
+    for (var j = 0; j < Object.keys(keys).length; j++) {
+      matrix[i].push(0)
+    }
+  }
+
+  var previousKey = null
+  var previousTime = null
+  for (let i = 0; i < data.length; i++) {
+    if (previousKey === null || previousTime === null) {
+      previousKey = data[i].aoi
+      previousTime = +data[i].time
+    }
+    if (previousKey !== data[i].aoi || data.length - 1 === i) {
+      timeLapsed = +data[i].time - previousTime
+
+      var fromIndex = +keys[previousKey]
+      var toIndex = +keys[data[i].aoi]
+
+      matrix[fromIndex][toIndex] += timeLapsed / 1000
+
+      previousKey = data[i].aoi
+      previousTime = +data[i].time
+    }
+  }
+
+  return matrix
+}
+
 function convertDataForActionSequence (data, bounds = false) {
   // Filter data
   data = data.filter(function (d) {

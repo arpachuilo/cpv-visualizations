@@ -1,5 +1,5 @@
-function drawCircularAOI (matrix, keys) {
-  var svg = d3.select('#aoi')
+function drawCircularAoi (id, matrix, keys) {
+  var svg = d3.select('#' + id)
   var width = svg.node().parentNode.offsetWidth
   var height = +svg.attr('height')
   svg.attr('width', width)
@@ -55,7 +55,7 @@ function drawCircularAOI (matrix, keys) {
       .enter().append('g')
 
   var arcs = group.append('path')
-    .attr('id', function (d) { return className(d.index) })
+    .attr('id', function (d) { return id + className(d.index) })
     .attr('class', function (d) { return className(d.index) })
     .attr('d', arc)
     .on('mouseenter', function (d, i) {
@@ -95,11 +95,11 @@ function drawCircularAOI (matrix, keys) {
     .attr('dy', 15)
 
   arcText.append('textPath')
-    .attr('xlink:href', function (d) { return '#' + className(d.index) })
+    .attr('xlink:href', function (d) { return '#' + id + className(d.index) })
     .text(function (d) { return className(d.index) })
 
   arcText.filter(function (d) {
-    return arcs._groups[0][d.index].getTotalLength() / 2 - 16 < this.getComputedTextLength()
+    return arcs._groups[0][d.index].getTotalLength() / 2 - 24 < this.getComputedTextLength()
   }).remove()
 
   var gRibbons = g.append('g')
