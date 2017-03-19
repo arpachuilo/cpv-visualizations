@@ -1,4 +1,4 @@
-function drawLineChart (data, xDomain = [0, 90]) {
+function drawLineChart (data, xDomain = [0, 90], segments) {
   var svg = d3.select('#dataCoverageSparkLine')
   var width = svg.node().parentNode.offsetWidth
   var height = +svg.attr('height')
@@ -55,6 +55,14 @@ function drawLineChart (data, xDomain = [0, 90]) {
     .attr('cy', function (d) { return y(d.numFilters) })
     .attr('fill', 'red')
     .attr('r', 2)
+
+  gChart.selectAll('rect')
+    .data(segments).enter().append('rect')
+    .attr('height', chartHeight)
+    .attr('width', 2)
+    .attr('fill', 'blue')
+    .attr('y', 0)
+    .attr('x', function (d) { return x(d) })
 
   var gXaxis = svg.append('g')
     .attr('class', 'x axis')

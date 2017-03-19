@@ -87,6 +87,7 @@
 
   <script>
   var ids = ['CPV-A', 'CPV-B', 'CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-G', 'CPV-I', 'CPV-J']
+  var ids = ['CPV-A', 'CPV-B']
 
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
 
@@ -173,7 +174,7 @@
     brushOverlay
       .xDomain([0, selected.xMax])
       .update()
-    drawLineChart(selected.filterTimeBin, [0, selected.xMax])
+    drawLineChart(selected.filterTimeBin, [0, selected.xMax], selected.bSegment)
     drawCharts()
   }
 
@@ -186,16 +187,24 @@
       p.id = values[index]
       d3.text('data/eye/' + values[index] + '.csv', function(eye) {
         p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
-        p.eyeTimeBin = timeBinEyeData(p.loadedEye, 90)
         d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
           p.loadedMouse = mouse
-          p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, 90)
+
           p.filterTimeBin = numFiltersOverTime(p.loadedMouse)
 
           p.xMax = Math.max(
-            d3.max(p.mouseTimeBin, function (d) { return d.endTime }),
-            d3.max(p.eyeTimeBin, function (d) { return d.endTime })
+            d3.max(p.loadedMouse, function (d) { return +d.date }),
+            d3.max(p.loadedEye, function (d) { return +d.time })
           )
+
+          // Bin into 30 second resolution
+          var nBins = Math.ceil(p.xMax / (60 * 1000))
+          p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
+          p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
+
+          p.eSegment = segment(p.eyeTimeBin)
+          p.mSegment = segment(p.mouseTimeBin)
+          p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
 
           dataTable.push(p)
 

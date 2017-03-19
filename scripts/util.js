@@ -649,3 +649,60 @@ function generateActionSequence (data, bounds = false, key = false) {
     keys: key
   }
 }
+
+function maxKey (o) {
+  var num = -1
+  var key = ''
+
+  if (o.overviewHist > num) {
+    num = o.overviewHist
+    key = 'overviewHist'
+  }
+
+  if (o.detailHist > num) {
+    num = o.detailHist
+    key = 'detailHist'
+  }
+
+  if (o.graph > num) {
+    num = o.graph
+    key = 'graph'
+  }
+
+  if (o.table > num) {
+    num = o.table
+    key = 'table'
+  }
+
+  if (o.offices > num) {
+    num = o.offices
+    key = 'offices'
+  }
+
+  return key
+}
+
+function segment (data) {
+  var tBreaks = [0]
+  var prevKey = maxKey(data[0])
+  for (var i = 0; i < data.length; i++) {
+    if (prevKey !== maxKey(data[i])) {
+      tBreaks.push(data[i].startTime)
+      prevKey = maxKey(data[i])
+    }
+  }
+  return tBreaks
+}
+
+function pairwiseSegment (d1, d2) {
+  var tBreaks = [0]
+  var prevKey = maxKey(d1[0]) + '-' + maxKey(d2[0])
+  for (var i = 0; i < d1.length; i++) {
+    var tempKey = maxKey(d1[i]) + '-' + maxKey(d2[i])
+    if (prevKey !== tempKey) {
+      tBreaks.push(d1[i].startTime)
+      prevKey = tempKey
+    }
+  }
+  return tBreaks
+}
