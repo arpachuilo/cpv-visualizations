@@ -25,22 +25,20 @@
 
   <div id='loader' class='loading'>Loading&#8230;</div>
 
-  <ul>
-    <li><a class='active' href='VideoHeatmap.html'>Video Heatmap</a></li>
-    <li><a href='OverviewDetail.html'>Overview + Detail</a></li>
-    <li><a href='Contextual.html'>Contextualized</a></li>
-    <li class='pull-right'>
+  <ul id='nav'>
+    <li class='nav-item'><a class='active' href='VideoHeatmap.html'>Video Heatmap</a></li>
+    <li class='nav-item'><a href='OverviewDetail.html'>Overview</a></li>
+    <li class='nav-item-right'>
+      <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>CPV-A</option>
-        <option value='1'>CPV-B</option>
-        <option value='2'>CPV-C</option>
-        <option value='3'>CPV-D</option>
-        <option value='4'>CPV-E</option>
-        <option value='5'>CPV-F</option>
-        <option value='6'>CPV-G</option>
-        <option value='7'>CPV-H</option>
-        <option value='8'>CPV-I</option>
-        <option value='9'>CPV-J</option>
+        <option value='0'>CPV-C</option>
+        <option value='1'>CPV-D</option>
+        <option value='2'>CPV-E</option>
+        <option value='3'>CPV-F</option>
+        <option value='4'>CPV-G</option>
+        <option value='5'>CPV-H</option>
+        <option value='6'>CPV-I</option>
+        <option value='7'>CPV-J</option>
       </select>
     </li>
   </ul>
@@ -54,7 +52,7 @@
 
 </body>
 <script>
-  var ids = ['CPV-A', 'CPV-B', 'CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-G', 'CPV-I', 'CPV-J']
+  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-G', 'CPV-I', 'CPV-J']
   var videoHeatmap = VideoHeatmap(document.getElementById('video-overlay'), document.getElementById('user-video'))
 
   var data = {}

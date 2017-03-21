@@ -1,4 +1,4 @@
-function drawLineChart (data, xDomain = [0, 90], segments) {
+function drawLineChart (data, xDomain = [0, 90], segments, segClick, inflections) {
   var svg = d3.select('#dataCoverageSparkLine')
   var width = svg.node().parentNode.offsetWidth
   var height = +svg.attr('height')
@@ -56,13 +56,41 @@ function drawLineChart (data, xDomain = [0, 90], segments) {
     .attr('fill', 'red')
     .attr('r', 2)
 
-  gChart.selectAll('rect')
-    .data(segments).enter().append('rect')
-    .attr('height', chartHeight)
-    .attr('width', 2)
-    .attr('fill', 'blue')
-    .attr('y', 0)
-    .attr('x', function (d) { return x(d) })
+  if (typeof inflections !== 'undefined') {
+    for (var i = 1; i < inflections.length; i++) {
+      gChart
+        .append('rect')
+        .attr('class', 'inflection')
+        .attr('width', 8)
+        .attr('height', chartHeight)
+        .attr('y', 0)
+        .attr('x', x(inflections[i].time))
+        .attr('fill', 'green')
+    }
+  }
+
+  for (var i = 1; i < segments.length; i++) {
+    gChart
+      .append('rect')
+      .attr('class', 'segmentBlock')
+      .attr('width', x(segments[i]) - x(segments[i - 1]))
+      .attr('height', chartHeight)
+      .attr('y', 0)
+      .attr('x', x(segments[i - 1]))
+      .on('click', segClick.bind(null, i - 1))
+  }
+
+  for (var i = 1; i < segments.length; i++) {
+    gChart
+      .append('rect')
+      .attr('class', 'segmenteLine')
+      .attr('width', 8)
+      .attr('height', chartHeight)
+      .attr('fill', 'blue')
+      .attr('fill-opacity', 0.9)
+      .attr('y', 0)
+      .attr('x', x(segments[i]))
+  }
 
   var gXaxis = svg.append('g')
     .attr('class', 'x axis')

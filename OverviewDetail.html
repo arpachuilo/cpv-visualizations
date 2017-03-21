@@ -15,6 +15,7 @@
   <script src='./scripts/CircularAOI.js'></script>
   <script src='./scripts/LineChart.js'></script>
   <script src='./scripts/brushOverlay.js'></script>
+  <script src='./scripts/SummaryDetails.js'></script>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
@@ -27,27 +28,55 @@
 
   <div id='loader' class='loading'>Loading&#8230;</div>
 
-  <ul>
-    <li><a href='VideoHeatmap.html'>Video Heatmap</a></li>
-    <li><a class='active' href='OverviewDetail.html'>Overview + Detail</a></li>
-    <li><a href='Contextual.html'>Contextualized</a></li>
-    <li class='pull-right'>
+  <ul id='nav'>
+    <li class='nav-item'><a href='VideoHeatmap.html'>Video Heatmap</a></li>
+    <li class='nav-item'><a class='active' href='OverviewDetail.html'>Overview</a></li>
+    <li class='nav-item-right'>
+      <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>CPV-A</option>
-        <option value='1'>CPV-B</option>
-        <option value='2'>CPV-C</option>
-        <option value='3'>CPV-D</option>
-        <option value='4'>CPV-E</option>
-        <option value='5'>CPV-F</option>
-        <option value='6'>CPV-G</option>
-        <option value='7'>CPV-H</option>
-        <option value='8'>CPV-I</option>
-        <option value='9'>CPV-J</option>
+        <option value='0'>CPV-C</option>
+        <option value='1'>CPV-D</option>
+        <option value='2'>CPV-E</option>
+        <option value='3'>CPV-F</option>
+        <option value='4'>CPV-G</option>
+        <option value='5'>CPV-H</option>
+        <option value='6'>CPV-I</option>
+        <option value='7'>CPV-J</option>
+      </select>
+    </li>
+    <li class='nav-item-right'>
+      <span>Segmentation</span>
+      <select class='dd' id='segset' onchange='setSeg()'>
+        <option value='0'>Eye</option>
+        <option value='1'>Mouse</option>
+        <option value='2'>Both</option>
       </select>
     </li>
   </ul>
 
   <div class='row'>
+
+    <div class='row' id='summary'>
+      <div class='two columns'>
+        <span>Actions</span>
+        <ul id='summary-actions'></ul>
+      </div>
+      <div class='two columns'>
+        <span>Headers</span>
+        <ul id='summary-headers'></ul>
+      </div>
+
+      <div class='eight columns'>
+        <div class='row'>
+          <span>People of Interest: </span>
+          <span id='poi'></span>
+        </div>
+        <div class='row'>
+          <span>Time Windows (days): </span>
+          <span id='times'></span>
+        </div>
+      </div>
+    </div>
 
     <div class='row'>
       <div class='twelve columns relative-container' id='brush-container'>
@@ -57,10 +86,10 @@
         <div class='row'>
           <div id='eyeStackedChart'></div>
         </div>
-        <div class='row'>
-          <svg height='60' id='dataCoverageSparkLine'></svg>
-        </div>
         <svg id='brush-overlay'></svg>
+      </div>
+      <div class='row'>
+        <svg height='60' id='dataCoverageSparkLine'></svg>
       </div>
     </div>
 
@@ -86,9 +115,8 @@
   </div>
 
   <script>
-  var ids = ['CPV-A', 'CPV-B', 'CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-G', 'CPV-I', 'CPV-J']
-  var ids = ['CPV-A', 'CPV-B']
-
+  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J']
+  // var ids = ['CPV-C', 'CPV-D']
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
 
   var bounds = false
@@ -126,6 +154,8 @@
 
   var dataTable = []
   var selected = null
+  var selectedSeg = null
+  var selectedSummary = null
 
   function resize() {
     _.delay(function () {
@@ -144,19 +174,47 @@
 
   document.addEventListener('loaded-all', function () {
     selected = dataTable[0]
-
+    setSeg()
     updateSet()
     document.getElementById('loader').style.display = 'none'
   })
+
+  function segmentClick (index) {
+    selectedSummary = selected.summary[index]
+    console.log(selectedSummary)
+    brushOverlay.setBrushExtent([selectedSummary.tStart, selectedSummary.tEnd])
+    drawSummaryDetails(selectedSummary)
+  }
 
   function drawCharts () {
     drawCircularAoi('mouseAOI', convertDataForAOI(selected.loadedMouse, bounds), classKeys)
     drawCircularAoi('eyeAOI', convertDataForEyeAOI(selected.loadedEye, bounds), classKeys)
   }
 
+  function setSeg () {
+    if (+document.getElementById('segset').value === 0) {
+      selectedSeg = selected.eSegment
+    }
+
+    if (+document.getElementById('segset').value === 1) {
+      selectedSeg = selected.mSegment
+    }
+
+    if (+document.getElementById('segset').value === 2) {
+      selectedSeg = selected.bSegment
+    }
+
+    selected.summary = actionSummary(selectedSeg, selected.loadedMouse)
+    selectedSummary = selected.summary[0]
+    console.log(selected.inflections)
+    drawLineChart(selected.filterTimeBin, [0, selected.xMax], selectedSeg, segmentClick, selected.inflections)
+    drawSummaryDetails(selectedSummary)
+  }
+
   function switchSet () {
     selected = dataTable[+document.getElementById('dataset').value]
 
+    setSeg()
     updateSet()
   }
 
@@ -174,7 +232,7 @@
     brushOverlay
       .xDomain([0, selected.xMax])
       .update()
-    drawLineChart(selected.filterTimeBin, [0, selected.xMax], selected.bSegment)
+
     drawCharts()
   }
 
@@ -185,34 +243,37 @@
       var p = {}
       p.index = index
       p.id = values[index]
-      d3.text('data/eye/' + values[index] + '.csv', function(eye) {
-        p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
-        d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
-          p.loadedMouse = mouse
+      d3.text('data/inflections/' + values[index] + '.csv', function (err, inflections) {
+        p.inflections = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+        d3.text('data/eye/' + values[index] + '.csv', function(eye) {
+          p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
+          d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
+            p.loadedMouse = mouse
 
-          p.filterTimeBin = numFiltersOverTime(p.loadedMouse)
+            p.filterTimeBin = numFiltersOverTime(p.loadedMouse)
 
-          p.xMax = Math.max(
-            d3.max(p.loadedMouse, function (d) { return +d.date }),
-            d3.max(p.loadedEye, function (d) { return +d.time })
-          )
+            p.xMax = Math.max(
+              d3.max(p.loadedMouse, function (d) { return +d.date }),
+              d3.max(p.loadedEye, function (d) { return +d.time })
+            )
 
-          // Bin into 30 second resolution
-          var nBins = Math.ceil(p.xMax / (60 * 1000))
-          p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
-          p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
+            // Bin into 30 second resolution
+            var nBins = Math.ceil(p.xMax / (60 * 1000))
+            p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
+            p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
 
-          p.eSegment = segment(p.eyeTimeBin)
-          p.mSegment = segment(p.mouseTimeBin)
-          p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
+            p.eSegment = segment(p.eyeTimeBin)
+            p.mSegment = segment(p.mouseTimeBin)
+            p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
 
-          dataTable.push(p)
+            dataTable.push(p)
 
-          if (index === values.length - 1) {
-            document.dispatchEvent(new Event('loaded-all'))
-          } else {
-            loadHelper(index + 1)
-          }
+            if (index === values.length - 1) {
+              document.dispatchEvent(new Event('loaded-all'))
+            } else {
+              loadHelper(index + 1)
+            }
+          })
         })
       })
     }

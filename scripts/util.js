@@ -690,6 +690,9 @@ function segment (data) {
       tBreaks.push(data[i].startTime)
       prevKey = maxKey(data[i])
     }
+    if (i === (data.length - 1)) {
+      tBreaks.push(data[i].endTime)
+    }
   }
   return tBreaks
 }
@@ -703,6 +706,86 @@ function pairwiseSegment (d1, d2) {
       tBreaks.push(d1[i].startTime)
       prevKey = tempKey
     }
+    if (i === (d1.length - 1)) {
+      tBreaks.push(d1[i].endTime)
+    }
   }
   return tBreaks
+}
+
+function calcHeaders (bin) {
+  var headers = []
+  var prevHeader = 'AccessTime'
+
+  for (var i = 0; i < bin.length; i++) {
+    headers.push(prevHeader)
+
+    for (var j = 0; j < bin[i].data.length; j++) {
+      if (bin[i].data[j].id === 'headerClicked') {
+        var label = bin[i].data[j].target.split(' ')[1]
+        if (label !== prevHeader) {
+          headers.push(label)
+          prevHeader = label
+        }
+      }
+    }
+
+    bin[i].headers = headers
+    headers = []
+  }
+}
+
+function actionSummary (seg, data) {
+  var bin = []
+
+  for (var i = 1; i < seg.length; i++) {
+    var o = {}
+    o.tStart = seg[i - 1]
+    o.tEnd = seg[i]
+    o.data = []
+
+    for (var j = 0; j < data.length; j++) {
+      if (+o.tStart <= +data[j].date && +data[j].date < +o.tEnd) {
+        var key = data[j].id
+        o.data.push(data[j])
+        if (key in o) {
+          o[key] += 1
+        } else {
+          o[key] = 1
+        }
+      }
+    }
+
+    bin.push(o)
+  }
+
+  calcHeaders(bin)
+  console.log(bin)
+  return bin
+}
+//[00:26:17.07]
+function inflectionTimeFix (data) {
+  var offset = getMS(data[0].time)
+  for (var i = 1; i < data.length; i++) {
+    data[i].time = getMS(data[i].time) - offset
+  }
+
+  return data
+}
+
+function getMS (t) {
+  t = t.substring(1, t.length - 1)
+
+  var arr = t.split(':')
+
+  var h = +arr[0]
+  var m = +arr[1]
+  var s = +arr[2]
+
+  var time = 0
+  time += h * 1000 * 60 * 60
+  time += m * 1000 * 60
+  time += s * 1000
+
+  return time
 }

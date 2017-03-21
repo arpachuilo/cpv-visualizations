@@ -5,7 +5,7 @@ function BrushOverlay (parent) {
   var margin = {
     top: 12,
     left: 46, // One pixel off err
-    bottom: 26, // extra 6 to take into account the tick length from bottom chart
+    bottom: 0, // extra 6 to take into account the tick length from bottom chart
     right: 0
   }
 
@@ -80,6 +80,12 @@ function BrushOverlay (parent) {
       .on('click', function () {
         onBrushClick()
       })
+  }
+
+  this.setBrushExtent = function (_) {
+    gBrush
+      .call(brush.move, [x(_[0]), x(_[1])])
+    return this
   }
 
   this.onBrushStart = function (_) {

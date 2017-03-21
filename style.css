@@ -2,6 +2,10 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+.hidden {
+  display: none;
+}
+
 .relative-container {
   position: relative;
 }
@@ -12,35 +16,63 @@ body {
   margin-bottom: 0;
 }
 
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid #e7e7e7;
-    background-color: #f3f3f3;
+#nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  background-color: #f3f3f3;
 }
 
-li {
-    float: left;
-    margin-bottom: 0;
+.nav-item {
+  float: left;
+  margin-bottom: 0;
 }
 
-li a {
-    display: block;
-    color: #666;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+.nav-item-right {
+  float: right;
 }
 
-li a:hover:not(.active) {
+.nav-item a {
+  display: block;
+  color: #666;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.nav-item a:hover:not(.active) {
     background-color: #ddd;
 }
 
-li a.active {
-    color: white;
-    background-color: #0077BE;
+.nav-item a.active {
+  color: white;
+  background-color: #0077BE;
+}
+
+#summary ul {
+  margin: 0 0 0 0;
+}
+
+#summary li {
+  margin: 0 0 0 0;
+}
+
+.segmentBlock {
+  fill-opacity: 0;
+  stroke-width: 0;
+  cursor: pointer;
+}
+
+.inflection {
+  fill-opacity: 0.66;
+  pointer-events: none;
+}
+
+.segmentBlock:hover {
+  fill: black;
+  fill-opacity: 0.5;
 }
 
 #video-container {
