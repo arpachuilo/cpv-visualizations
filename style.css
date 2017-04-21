@@ -6,6 +6,26 @@ body {
   display: none;
 }
 
+#templateImg {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
+
+.a {
+  cursor: pointer;
+}
+
+.heatmapContainer {
+  margin-right: 10px;
+}
+
+canvas, img {
+  display: block;
+  margin: 1em auto;
+  border:1px solid black;
+}
+
 .relative-container {
   position: relative;
 }

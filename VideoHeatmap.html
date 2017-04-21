@@ -28,6 +28,7 @@
   <ul id='nav'>
     <li class='nav-item'><a class='active' href='VideoHeatmap.html'>Video Heatmap</a></li>
     <li class='nav-item'><a href='OverviewDetail.html'>Overview</a></li>
+    <li class='nav-item'><a href='SegmentedHeatmap.html'>Segmented Heatmap</a></li>
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
@@ -43,10 +44,13 @@
     </li>
   </ul>
 
+  <div class='row'>
+    <div style='display: inline-block; width: 10px; height: 10px; background-color: #6f1996'></div><span>Mouse</span>
+    <div style='display: inline-block; width: 10px; height: 10px; background-color: #52ef99'></div><span>Eye</span>
+  </div>
+
   <div id='video-container' class='row' style='position: relative; margin: 0 auto;'>
-    <video id='user-video'>
-      <source id='user-video-source' type='video/mp4'></source>
-    </video>
+    <video id='user-video'></video>
     <canvas id='video-overlay'></canvas>
   </div>
 
@@ -61,8 +65,7 @@
     var video = document.getElementById('user-video')
     video.pause()
 
-    var videoSource = document.getElementById('user-video-source')
-    videoSource.setAttribute('src', 'https://youtu.be/9EvbqxBUG_c')
+    video.setAttribute('src', '')
     videoHeatmap
       .setEyeData(data.loadedEye)
       .setMouseData(data.loadedMouse)

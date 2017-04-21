@@ -113,7 +113,8 @@ function timeBinInteractionData (data, numBins = 20) {
     'pageChange': 'table',
     'histogramBarClick': 'detailHist',
     'histogramBarMouseEnter': 'detailHist',
-    'graphNodeMouseEnter': 'graph'
+    'graphNodeMouseEnter': 'graph',
+    'infoHover': 'info'
   }
 
   var timeExtent = [0, d3.max(data, function (d) {
@@ -144,6 +145,7 @@ function timeBinInteractionData (data, numBins = 20) {
       'graph': 0,
       'table': 0,
       'offices': 0,
+      'info': 0,
       'total': 0
     })
 
@@ -172,8 +174,7 @@ function timeBinEyeData (data, numBins = 20) {
         return timeExtent[0] + interval * (i - 1) <= (+d.time) &&
           (+d.time) < timeExtent[0] + interval * i &&
           d.aoi !== 'none' &&
-          d.aoi !== 'officesKey' &&
-          d.aoi !== 'info'
+          d.aoi !== 'officesKey'
       })
     )
   }
@@ -188,6 +189,7 @@ function timeBinEyeData (data, numBins = 20) {
       'graph': 0,
       'table': 0,
       'offices': 0,
+      'info': 0,
       'total': 0
     })
 
@@ -322,7 +324,8 @@ function convertDataForAOI (data, bounds = false) {
     'detailHist': 1,
     'graph': 2,
     'table': 3,
-    'offices': 4
+    'offices': 4,
+    'info': 5
   }
 
   var subKeys = {
@@ -340,7 +343,8 @@ function convertDataForAOI (data, bounds = false) {
     'pageChange': 'table',
     'histogramBarClick': 'detailHist',
     'histogramBarMouseEnter': 'detailHist',
-    'graphNodeMouseEnter': 'graph'
+    'graphNodeMouseEnter': 'graph',
+    'infoHover': 'info'
   }
 
   var matrix = []
@@ -379,7 +383,7 @@ function convertDataForEyeAOI (data, bounds = false) {
   data = data.filter(function (d) {
     return (bounds ? (
       bounds[0] <= +d.time && +d.time <= bounds[1]
-    ) : true) && d.aoi !== 'none' && d.aoi !== 'info' && d.aoi !== 'officesKey'
+    ) : true) && d.aoi !== 'none' && d.aoi !== 'officesKey'
   })
 
   var keys = {
@@ -387,7 +391,8 @@ function convertDataForEyeAOI (data, bounds = false) {
     'detailHist': 1,
     'graph': 2,
     'table': 3,
-    'offices': 4
+    'offices': 4,
+    'info': 5
   }
 
   var matrix = []
@@ -679,6 +684,11 @@ function maxKey (o) {
     key = 'offices'
   }
 
+  if (o.info > num) {
+    num = o.info
+    key = 'info'
+  }
+
   return key
 }
 
@@ -760,7 +770,6 @@ function actionSummary (seg, data) {
   }
 
   calcHeaders(bin)
-  console.log(bin)
   return bin
 }
 //[00:26:17.07]

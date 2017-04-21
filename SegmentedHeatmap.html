@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<head>
+  <meta charset='utf-8'>
+  <script src='https://d3js.org/d3.v4.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
+
+  <script src='./scripts/util.js'></script>
+  <script src='./scripts/Heatmap.js'></script>
+  <script src='./scripts/MultipleHeatmaps.js'></script>
+  <script src='./scripts/Tooltip.js'></script>
+  <script src='./scripts/SummaryDetails.js'></script>
+
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css'>
+  <link rel='stylesheet' href='style.css'>
+
+  <title>Cyber Prov Vis</title>
+</head>
+<body onresize='resize()'>
+
+  <div id='loader' class='loading'>Loading&#8230;</div>
+
+  <ul id='nav'>
+    <li class='nav-item'><a href='VideoHeatmap.html'>Video Heatmap</a></li>
+    <li class='nav-item'><a href='OverviewDetail.html'>Overview</a></li>
+    <li class='nav-item'><a class='active' href='SegmentedHeatmap.html'>Segmented Heatmap</a></li>
+    <li class='nav-item-right'>
+      <span>Dataset</span>
+      <select class='dd' id='dataset' onchange='switchSet()'>
+        <option value='0'>CPV-C</option>
+        <option value='1'>CPV-D</option>
+        <option value='2'>CPV-E</option>
+        <option value='3'>CPV-F</option>
+        <option value='4'>CPV-G</option>
+        <option value='5'>CPV-H</option>
+        <option value='6'>CPV-I</option>
+        <option value='7'>CPV-J</option>
+      </select>
+    </li>
+    <li class='nav-item-right'>
+      <span>Segmentation</span>
+      <select class='dd' id='segset' onchange='setSeg()'>
+        <option value='0'>Eye</option>
+        <option value='1'>Mouse</option>
+        <option value='2'>Both</option>
+      </select>
+    </li>
+    <li class='nav-item-right'>
+      <span>Growth</span>
+      <select class='dd' id='growth' onchange='growth()'>
+        <option value='vertical'>Vertical</option>
+        <option value='horizontal'>Horizontal</option>
+      </select>
+    </li>
+  </ul>
+
+  <div class='row'>
+
+    <div class='row' id='summary'>
+      <div class='three columns'>
+        <span>Actions</span>
+        <ul id='summary-actions'></ul>
+      </div>
+      <div class='three columns'>
+        <span>Headers</span>
+        <ul id='summary-headers'></ul>
+      </div>
+
+      <div class='six columns'>
+        <div class='row'>
+          <span>People of Interest: </span>
+          <span id='poi'></span>
+        </div>
+        <div class='row'>
+          <span>Time Windows (days): </span>
+          <span id='times'></span>
+        </div>
+      </div>
+    </div>
+
+    <div id='heatmapLegend' class='row'>
+      <div style='display: inline-block; width: 10px; height: 10px; background-color: #6f1996'></div><span>Mouse</span>
+      <div style='display: inline-block; width: 10px; height: 10px; background-color: #52ef99'></div><span>Eye</span>
+    </div>
+
+    <div id='hmContainer' class='row'>
+      <div class='twelve columns' id='segmentedHeatmap'></div>
+      <img id='templateImg' src='app.png'></img>
+    </div>
+
+  </div>
+
+  <script>
+  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J']
+  // var ids = ['CPV-C', 'CPV-D']
+  var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices', 'info']
+
+  var dataTable = []
+  var selected = null
+  var selectedSeg = null
+  var selectedSummary = null
+
+  function growth () {
+    if (document.getElementById('growth').value === 'vertical') {
+      var hmContainer = document.getElementById('hmContainer')
+      hmContainer.style.height = window.innerHeight - document.getElementById('heatmapLegend').getBoundingClientRect().bottom - 100 + 'px'
+      hmContainer.style.overflowY = 'scroll'
+      hmContainer.style.overflowX = 'hidden'
+      hmContainer.style.whiteSpace = 'normal'
+    }
+    if (document.getElementById('growth').value === 'horizontal') {
+      var hmContainer = document.getElementById('hmContainer')
+      hmContainer.style.height = '350px'
+      hmContainer.style.overflowX = 'scroll'
+      hmContainer.style.overflowY = 'hidden'
+      hmContainer.style.whiteSpace = 'nowrap'
+    }
+
+    if (typeof heatmaps !== 'undefined') {
+      heatmaps
+        .drawHeatmaps()
+    }
+  }
+
+  growth()
+
+  function resize() {
+    _.delay(function () {
+
+    }, 500)
+  }
+
+  document.addEventListener('loaded-all', function () {
+    selected = dataTable[0]
+    setSeg()
+    updateSet()
+    document.getElementById('loader').style.display = 'none'
+  })
+
+  function segmentClick (index) {
+    selectedSummary = selected.summary[index]
+    drawSummaryDetails(selectedSummary)
+  }
+
+  var heatmaps = MultipleHeatmaps(document.getElementById('segmentedHeatmap'), segmentClick)
+
+  function setSeg () {
+    if (+document.getElementById('segset').value === 0) {
+      selectedSeg = selected.eSegment
+    }
+
+    if (+document.getElementById('segset').value === 1) {
+      selectedSeg = selected.mSegment
+    }
+
+    if (+document.getElementById('segset').value === 2) {
+      selectedSeg = selected.bSegment
+    }
+
+    selected.summary = actionSummary(selectedSeg, selected.loadedMouse)
+    selectedSummary = selected.summary[0]
+
+    heatmaps
+      .setSegments(selectedSeg)
+      .drawHeatmaps()
+    drawSummaryDetails(selectedSummary)
+  }
+
+  function switchSet () {
+    selected = dataTable[+document.getElementById('dataset').value]
+
+    setSeg()
+    updateSet()
+  }
+
+  function updateSet () {
+    heatmaps
+      .setEyeData(selected.loadedEye)
+      .setMouseData(selected.loadedMouse)
+      .setSegments(selectedSeg)
+
+    heatmaps.drawHeatmaps()
+  }
+
+  function loadAll (values) {
+    document.getElementById('loader').style.display = 'block'
+
+    function loadHelper (index) {
+      var p = {}
+      p.index = index
+      p.id = values[index]
+      d3.text('data/inflections/' + values[index] + '.csv', function (err, inflections) {
+        p.inflections = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+        d3.text('data/eye/' + values[index] + '.csv', function(eye) {
+          p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
+          d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
+            p.loadedMouse = mouse
+
+            p.filterTimeBin = numFiltersOverTime(p.loadedMouse)
+
+            p.xMax = Math.max(
+              d3.max(p.loadedMouse, function (d) { return +d.date }),
+              d3.max(p.loadedEye, function (d) { return +d.time })
+            )
+
+            // Bin into 30 second resolution
+            var nBins = Math.ceil(p.xMax / (60 * 1000))
+            p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
+            p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
+
+            p.eSegment = segment(p.eyeTimeBin)
+            p.mSegment = segment(p.mouseTimeBin)
+            p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
+
+            dataTable.push(p)
+
+            if (index === values.length - 1) {
+              document.dispatchEvent(new Event('loaded-all'))
+            } else {
+              loadHelper(index + 1)
+            }
+          })
+        })
+      })
+    }
+
+    loadHelper(0)
+  }
+
+  loadAll(ids)
+  </script>
+</body>

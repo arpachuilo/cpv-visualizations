@@ -87,7 +87,7 @@ function VideoHeatmap(canvas, video) {
 
     // Draw eye dots
     ctx.globalAlpha = 0.5
-    ctx.fillStyle = '#fc8d59'
+    ctx.fillStyle = '#52ef99'
     for (var i = 0; i < e.length; i++) {
       ctx.beginPath()
       ctx.arc(x(e[i].x), y(e[i].y), r, 0, 2 * Math.PI)
@@ -95,7 +95,7 @@ function VideoHeatmap(canvas, video) {
     }
 
     // Draw mouse dots
-    ctx.fillStyle = '#99d594'
+    ctx.fillStyle = '#6f1996'
     for (var i = 0; i < m.length; i++) {
       ctx.beginPath()
       ctx.arc(x(m[i].x), y(m[i].y), r, 0, 2 * Math.PI)

@@ -92,7 +92,7 @@ for r in data:
     elif bntBB.contains_point((x, y)):
         r.append('offices')
     elif bntKeyBB.contains_point((x, y)):
-        r.append('officesKey')
+        r.append('offices')
     elif infoBB.contains_point((x, y)):
         r.append('info')
     elif tableBB.contains_point((x, y)):

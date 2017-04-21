@@ -31,6 +31,7 @@
   <ul id='nav'>
     <li class='nav-item'><a href='VideoHeatmap.html'>Video Heatmap</a></li>
     <li class='nav-item'><a class='active' href='OverviewDetail.html'>Overview</a></li>
+    <li class='nav-item'><a href='SegmentedHeatmap.html'>Segmented Heatmap</a></li>
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
@@ -117,7 +118,7 @@
   <script>
   var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J']
   // var ids = ['CPV-C', 'CPV-D']
-  var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices']
+  var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices', 'info']
 
   var bounds = false
 
@@ -206,7 +207,7 @@
 
     selected.summary = actionSummary(selectedSeg, selected.loadedMouse)
     selectedSummary = selected.summary[0]
-    console.log(selected.inflections)
+
     drawLineChart(selected.filterTimeBin, [0, selected.xMax], selectedSeg, segmentClick, selected.inflections)
     drawSummaryDetails(selectedSummary)
   }
