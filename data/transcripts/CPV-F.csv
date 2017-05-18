@@ -1,0 +1,76 @@
+[00:00:27.25],(START)
+[00:00:58.16],|reviewing over what's offered to them in vis|
+[00:01:27.17],"explained how the two views are not sync'd"
+[00:02:47.26],(INFLECTION)
+[00:02:48.17],"explained timestamp"
+[00:02:55.15],[going through using the slider]
+[00:04:20.00],(INFLECTION)
+[00:04:23.11],[selected small time window]
+[00:04:45.19],|briefly looking at graph|
+[00:05:35.00],(INFLECTION)
+[00:05:36.00],|trying to find something with small time resolution scanning over day|
+[00:09:13.18],"explained that there is no prox out"
+[00:11:37.25],(INFLECTION)
+[00:11:39.02],[using a finder resolution scanning through bnt]
+[00:14:13.10],(INFLECTION)
+[00:14:15.14],[going to start looking at smaller time window on randomly picked data and looking throgh table for person 38]
+[00:14:39.21],"explain other ways they can update bnt view time"
+[00:15:56.02],[flagged one for their large email size]
+[00:18:33.14],[decided there suspicion was just a compnay mail server]
+[00:19:59.28],(INFLECTION)
+[00:20:02.02],[back to using slider view looking for someone that might be in blue state for too long]
+[00:21:32.21],(INFLECTION)
+[00:21:33.28],[attemptiing to use graph]
+[00:24:06.21],(INFLECTION)
+[00:24:07.21],[scanning of weekends]
+[00:28:25.20],(INFLECTION)
+[00:28:26.20],[selected single person to inspect]
+[00:28:42.20],[going through table for this persons traffic]
+[00:29:42.29],(INFLECTION)
+[00:29:43.21],[looking at their traffic patterns in general]
+[00:30:02.11],(H1)
+[00:31:49.24],(INFLECTION)
+[00:31:51.05],[now they are just looking for people in blue state on off sync'd view]
+[00:32:37.02],[cleaned their view]
+[00:33:00.16],[focused on 39 and their blue state]
+[00:35:34.03],[changing focus onto other blue states]
+[00:36:36.27],(INFLECTION)
+[00:36:37.23],[now interested in high traffic hours still clicking on blues states]
+[00:37:23.19],|has not been attempting to clear people's stay in blue states|
+[00:38:52.27],|finally clearing people|
+[00:39:50.23],|trying to come up with another approach|
+[00:41:12.12],(INFLECTION)
+[00:41:14.00],[just going to click and go through events for a small time window]
+[00:44:08.23],[focusing on weekends first for this strategy]
+[00:44:33.00],|seems to have established some straetgy by now even though this gives a poorer time resolution|
+[00:55:55.02],[on last weekend for their strategy]
+[00:58:19.12],(H2)
+[00:58:40.27],(INFLECTION)
+[00:58:42.20],[looking at socket 8080 traffic]
+[01:00:03.16],[starting with single days worth of data]
+[01:00:20.08],[looking for any dest ips that pop up a lot over 8080]
+[01:02:47.13],[looking at src ip 22]
+[01:03:45.25],(INFLECTION)
+2[01:04:10.08],[focused on 22 for a bit]
+[01:04:37.06],(INFLECTION)
+[01:04:38.21],[back to scanning through for common dest/src ip pairs]
+[01:05:43.07],|still has yet to clear these events|
+[01:07:13.06],(INFLECTION)
+[01:07:14.03],[going through marking 8080s for 22 and 34]
+[01:10:39.12],(INFLECTION)
+[01:10:41.20],[looking at day 1 traffic with these highlight evenst they selected]
+[01:11:41.16],'seeing this dest ip pop up frequently'
+[01:14:56.11],(INFLECTION)
+[01:14:57.03],[looking at table in regards to response sizes now]
+[01:15:56.15],"reminder about blue state"
+[01:19:57.11],'looking for weird ips over 8080'
+[01:20:45.29],"suggested looking at whole dataset in terms of request size"
+[01:21:18.21],(INFLECTION)
+[01:21:19.29],[selected hwole time window with request size]
+[01:21:38.13],[back to looking at blues]
+[01:22:00.05],[selecting stuff with ip ending 133]
+[01:22:18.29],|they now have good footing on the baddies|
+[01:27:21.15],(INFLECTION)
+[01:27:29.17],[clearing mess they made in selected view]
+[01:29:02.20],|trying to do some form of reasoning on who exactly this person might be|
+[01:30:42.28],(END)

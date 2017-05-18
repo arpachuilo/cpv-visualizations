@@ -8,9 +8,12 @@
 
   <script src='./scripts/util.js'></script>
   <script src='./scripts/Heatmap.js'></script>
+  <script src='./scripts/timeBar.js'></script>
+  <script src='./scripts/Summarize.js'></script>
   <script src='./scripts/MultipleHeatmaps.js'></script>
   <script src='./scripts/Tooltip.js'></script>
   <script src='./scripts/SummaryDetails.js'></script>
+  <script src='./scripts/drawTranscriptDetails.js'></script>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css'>
@@ -46,6 +49,7 @@
         <option value='0'>Eye</option>
         <option value='1'>Mouse</option>
         <option value='2'>Both</option>
+        <option value='3'>Set Based</option>
       </select>
     </li>
     <li class='nav-item-right'>
@@ -60,25 +64,7 @@
   <div class='row'>
 
     <div class='row' id='summary'>
-      <div class='three columns'>
-        <span>Actions</span>
-        <ul id='summary-actions'></ul>
-      </div>
-      <div class='three columns'>
-        <span>Headers</span>
-        <ul id='summary-headers'></ul>
-      </div>
-
-      <div class='six columns'>
-        <div class='row'>
-          <span>People of Interest: </span>
-          <span id='poi'></span>
-        </div>
-        <div class='row'>
-          <span>Time Windows (days): </span>
-          <span id='times'></span>
-        </div>
-      </div>
+      <ul id='transcripts'></ul>
     </div>
 
     <div id='heatmapLegend' class='row'>
@@ -95,7 +81,7 @@
 
   <script>
   var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J']
-  // var ids = ['CPV-C', 'CPV-D']
+  ids = ['CPV-C', 'CPV-D']
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices', 'info']
 
   var dataTable = []
@@ -113,7 +99,7 @@
     }
     if (document.getElementById('growth').value === 'horizontal') {
       var hmContainer = document.getElementById('hmContainer')
-      hmContainer.style.height = '350px'
+      hmContainer.style.height = '300px'
       hmContainer.style.overflowX = 'scroll'
       hmContainer.style.overflowY = 'hidden'
       hmContainer.style.whiteSpace = 'nowrap'
@@ -141,8 +127,14 @@
   })
 
   function segmentClick (index) {
-    selectedSummary = selected.summary[index]
-    drawSummaryDetails(selectedSummary)
+    var t0 = selectedSeg[index]
+    var t1 = selectedSeg[index + 1]
+
+    var prunedTranscripts = selected.transcripts.filter(function (d) {
+      return d.time >= t0 && d.time < t1
+    })
+
+    drawTranscriptDetails(prunedTranscripts)
   }
 
   var heatmaps = MultipleHeatmaps(document.getElementById('segmentedHeatmap'), segmentClick)
@@ -160,13 +152,18 @@
       selectedSeg = selected.bSegment
     }
 
+    if (+document.getElementById('segset').value === 3) {
+      selectedSeg = selected.testSegment
+    }
+
     selected.summary = actionSummary(selectedSeg, selected.loadedMouse)
     selectedSummary = selected.summary[0]
 
     heatmaps
+      .setSummaryInfo(selected.summary)
       .setSegments(selectedSeg)
       .drawHeatmaps()
-    drawSummaryDetails(selectedSummary)
+    segmentClick(0)
   }
 
   function switchSet () {
@@ -180,7 +177,9 @@
     heatmaps
       .setEyeData(selected.loadedEye)
       .setMouseData(selected.loadedMouse)
+      .setSummaryInfo(selected.summary)
       .setSegments(selectedSeg)
+      .setInflections(selected.inflections)
 
     heatmaps.drawHeatmaps()
   }
@@ -192,8 +191,11 @@
       var p = {}
       p.index = index
       p.id = values[index]
-      d3.text('data/inflections/' + values[index] + '.csv', function (err, inflections) {
-        p.inflections = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+      d3.text('data/transcripts/' + values[index] + '.csv', function (err, inflections) {
+        p.transcripts = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+        p.hints = parseHints(p.transcripts)
+        p.inflections = parseInflections(p.transcripts)
+
         d3.text('data/eye/' + values[index] + '.csv', function(eye) {
           p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
           d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
@@ -210,10 +212,12 @@
             var nBins = Math.ceil(p.xMax / (60 * 1000))
             p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
             p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
+            p.interactionTimeBin = timeBinIntoInteractions(p.loadedMouse, nBins)
 
             p.eSegment = segment(p.eyeTimeBin)
             p.mSegment = segment(p.mouseTimeBin)
             p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
+            p.testSegment = nPairBasedNoOverlap(p.interactionTimeBin, 2)
 
             dataTable.push(p)
 

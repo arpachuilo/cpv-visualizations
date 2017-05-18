@@ -1,7 +1,7 @@
 function Heatmap (canvas) {
 
   canvas.width = 320
-  canvas.height = 240
+  canvas.height = 239
 
   var e = []
   var m = []

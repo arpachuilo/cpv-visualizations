@@ -6,6 +6,16 @@ body {
   display: none;
 }
 
+.heatmap-summary {
+  width: 405px;
+  font-size: 11px;
+}
+
+.heatmap-summary td {
+  border: none;
+  padding: 0 0 0 0;
+}
+
 #templateImg {
   visibility: hidden;
   height: 0;
@@ -21,9 +31,13 @@ body {
 }
 
 canvas, img {
-  display: block;
   margin: 1em auto;
-  border:1px solid black;
+  border: 1px solid black;
+}
+
+.timebar {
+  margin: 1em auto;
+  shape-rendering: crispEdges;
 }
 
 .relative-container {

@@ -5,6 +5,8 @@ function MultipleHeatmaps (el, fn) {
   var eyeData = []
   var mouseData = []
   var segments = []
+  var summary = []
+  var inflections = []
 
   this.drawHeatmaps = function () {
     // Clear old version
@@ -18,23 +20,31 @@ function MultipleHeatmaps (el, fn) {
       container.classList.add('heatmapContainer')
       container.addEventListener('click', fn.bind(null, i))
 
+      var topContainer = document.createElement('div')
+      var bottomContainer = document.createElement('div')
+
+      var leftContainer = document.createElement('div')
+      leftContainer.style.display = 'inline-block'
+      var rightContainer = document.createElement('div')
+      rightContainer.style.display = 'inline-block'
+
       var heatmap = document.createElement('canvas')
 
-      var times = document.createElement('div')
+      // var times = document.createElement('div')
+      //
+      // var t0 = document.createElement('span')
+      // t0.style.float = 'left'
+      // t0.innerText = moment.duration(segments[i], 'ms').format('m:ss')
+      //
+      // var t1 = document.createElement('span')
+      // t1.style.float = 'right'
+      // t1.innerText = moment.duration(segments[i + 1], 'ms').format('m:ss')
+      //
+      // times.appendChild(t0)
+      // times.appendChild(t1)
 
-      var t0 = document.createElement('span')
-      t0.style.float = 'left'
-      t0.innerText = moment.duration(segments[i], 'ms').format('m:ss')
-
-      var t1 = document.createElement('span')
-      t1.style.float = 'right'
-      t1.innerText = moment.duration(segments[i + 1], 'ms').format('m:ss')
-
-      times.appendChild(t0)
-      times.appendChild(t1)
-
-      container.appendChild(heatmap)
-      container.appendChild(times)
+      rightContainer.appendChild(heatmap)
+      // rightContainer.appendChild(times)
 
       var e = eyeData.filter(function (d) {
         return d.time < segments[i + 1] &&
@@ -48,13 +58,28 @@ function MultipleHeatmaps (el, fn) {
          d.date >= segments[i]
        })
 
+      bottomContainer.appendChild(leftContainer)
+      bottomContainer.appendChild(rightContainer)
+
+      container.appendChild(topContainer)
+      container.appendChild(bottomContainer)
+
+      el.appendChild(container)
+      timeBar(leftContainer, segments[0], segments[segments.length - 1], segments[i], segments[i + 1], inflections)
+
+      summarize(topContainer, summary[i])
+
       Heatmap(heatmap)
         .setE(e)
         .setM(m)
         .draw()
-
-      el.appendChild(container)
     }
+  }
+
+  this.setSummaryInfo = function (_) {
+    if (!arguments.length) return summary
+    summary = _
+    return this
   }
 
   this.setSegments = function (_) {
@@ -72,6 +97,12 @@ function MultipleHeatmaps (el, fn) {
   this.setMouseData = function (_) {
     if (!arguments.length) return mouseData
     mouseData = _
+    return this
+  }
+
+  this.setInflections = function (_) {
+    if (!arguments.length) return inflections
+    inflections = _
     return this
   }
 

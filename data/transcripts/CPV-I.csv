@@ -1,0 +1,51 @@
+[00:00:22.06],(START)
+[00:00:23.29],'start by looking at stuff for when employees first came into building'
+[00:01:06.07],[using sliders]
+[00:01:57.29],|not sure what they are looking for|
+[00:02:27.25],'going to look at actions over time to find things suspicous'
+[00:02:54.26],(INFLECTION)
+[00:02:55.09],'going to look at each employee individually'
+[00:03:06.15],[looking at traffic day by day for each employee]
+[00:04:00.12],(INFLECTION)
+[00:04:00.29],'going to check for people communicating after leaving blue state'
+[00:05:30.17],[flagged event]
+[00:06:51.28],[using sliders to look for blue states]
+[00:07:34.15],'seeing if I can secondary sort'
+[00:09:21.23],(INFLECTION)
+[00:09:29.15],[focused on employee 0 and 1]
+[00:09:22.16],'going to try and accomplish same task but a different way'
+[00:13:13.25],'looking at who they communicated with after leaving classified area'
+[00:16:42.07],'going to try and look for any foriegn ips that stand out'
+[00:17:08.23],(INFLECTION)
+[00:17:13.28],[focused on employee 0]
+[00:18:23.23],'also looking at comparison of req/resp size'
+[00:23:22.12],'going to try and look for correlation of spike in traffic and when they leave classified area'
+[00:23:54.20],(INFLECTION)
+[00:27:08.14],'noticing employee 0 is often sending data after they get back from computer'
+[00:29:05.14],(INFLECTION)
+[00:29:06.21],[selecting everyone at once]
+[00:30:23.25],'going to see if any single day of traffic stands out'
+[00:30:56.07],(H1)
+[00:31:41.17],'am I allowed to use pen and paper?'
+[00:31:53.19],"no"
+[00:33:29.28],(INFLECTION)
+[00:33:30.21],[back to looking at employee zero and messing with sliders]
+[00:37:14.17],'trying to look at traffic for multiple people at a time'[00:39:13.10],(INFLECTION)
+[00:39:14.17],[back to selecting everyone]
+[00:39:32.07],|still not sure why they are doing this|
+[00:40:25.14],[used sliders to find first instance of blue state]
+[00:43:01.16],'now looking for where 56 might have sent traffic while in classified area'
+[00:51:59.11],[seems to be looking through traffic then updating bnt to observed times in table via sliders]
+[00:54:16.12],'don't think there is a better way to do this'
+[00:55:19.21],'still think this is best way of course'
+[01:02:32.08],(H2)
+[01:03:16.17],'going to do what they have been doing but just focus on 8080'
+[01:03:45.13],(INFLECTION)
+[01:05:30.25],(INFLECTION)
+[01:05:35.27],'going to change what i'm doing by looking at everything and sorting by socket'
+[01:06:00.26],[did this and glanced through table]
+[01:06:33.08],[clicking on access time and checking their access in bnt]
+[01:18:05.17],'found a lot of suspicous ones based on who I thought was piggybacking'
+[01:19:32.03],'56 had an event with large request size keeping eye on 56'
+[01:26:19.00],'this all seems to be going to that one ip address'
+[01:30:29.13],(END)

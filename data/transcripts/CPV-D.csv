@@ -1,0 +1,92 @@
+[00:00:00.03],(START)
+[00:00:35.19],[Making sense of information presented to them]
+[00:01:00.18],'wants to look at overalls data to see how many blue stats there are then start thinking about it afterwards'
+[00:01:35.10],[going to go day by day with slider looking for blue]
+[00:03:11.00],'concerned about blue'
+[00:03:24.12],|not sure they still fully understand what blue state means|
+[00:04:10.29],'people do susicpus stuff during off work hours'
+[00:05:14.12],'talking about piggybacking'
+[00:05:25.29],|did a lot of talking with no actions|
+[00:06:14.01],'asking if there is a lead'
+[00:06:26.01],"tell them there is none"
+[00:07:02.23],|still just toying with sliders looking for blue|
+[00:14:05.11],'thinking aloud about what this person may be doing to leak'
+[00:14:30.12],'asked if it was a single or group of employees'
+[00:14:43.12],"tell them it is a single employee"
+[00:15:44.15],(INFLECTION)
+[00:15:47.17],[Finds employee 43 susicpus going to start with the region around them - mousing around these offices]
+[00:17:46.08],'talking about piggy backing and wondering about its implications'
+[00:19:11.23],(INFLECTION)
+[00:19:13.10],[backing to moving sliders looking for blue states]
+[00:23:38.05],'asked what no prox log means'
+[00:23:38.05],"explained that it just means there was no data about their entry for that time"
+[00:27:36.28],|looking away from screen a lot and just thinking and talking about problem|
+[00:29:47.11],(H1)
+[00:30:26.05],(INFLECTION)
+[00:30:27.09],'asking how to view 1 day of data'
+[00:30:49.17],"explain how to use brush"
+[00:31:15.23],[selected first day of data and doing a lot of mouseovers]
+[00:31:55.18],(INFLECTION)
+[00:32:03.01],"explain how you can click access times to update view"
+[00:32:12.28],[updating bnt view by clicking access times]
+[00:33:02.23],(INFLECTION)
+[00:33:08.05],'asking questions about how to access information they want'
+[00:33:44.28],'want to think then ask question'
+[00:33:33.28],"explain how to view data they want using interface"
+[00:34:32.20],|they better understand table and bnt are disjoint in time|
+[00:36:30.12],'asked how they can view single ip'
+[00:36:32.09],(INFLECTION)
+[00:37:48.18],"explained they just have to click on employee in bnt"
+[00:38:59.15],(INFLECTION)
+[00:39:02.22],[playing with slider to view employees whereabouts]
+[00:39:36.28],|seems to have better understanding of how interface works now|
+[00:40:08.27],'want to look into what protocols they would use to send leaks -- thinking this would be email'
+[00:40:09.24],(INFLECTION)
+[00:41:27.10],[observing table]
+[00:42:17.15],'going to look into dest ip ending in 250'
+[00:43:55.28],(INFLECTION)
+[00:43:58.05],'realizes they can select multiple people at same time'
+[00:45:27.01],(INFLECTION)
+[00:45:28.01],[asking more about how to user interface]
+[00:45:43.17],[back to using slider starting with day zero]
+[00:49:57.09],(INFLECTION)
+[00:49:59.20],[curious about resstrict port range 8080]
+[00:50:22.05],'ask how to view only certain range and those sockets'
+[00:50:45.23],"explain they can sort on socket"
+[00:51:07.28],[looking through at 8080 and thinking]
+[00:52:24.07],'realizes other employees also use 8080'
+[00:53:37.12],(INFLECTION)
+[00:53:40.04],[highlights whole time range]
+[00:54:12.16],[looking at whole data set based request size over 8080]
+[00:54:36.28],'looking for high traffic over 8080'
+[00:58:00.20],'presumes they would use a different computer from there own'
+[00:59:10.01],|does not seem to be doing much with interface|
+[01:00:20.05],(H2)
+[01:00:50.00],(INFLECTION)
+[01:00:52.00],[wants daywise event block]
+[01:01:19.21],[selects employees they think are suspicious]
+[01:03:46.12],[looking at overall traffic for the three they selected]
+[01:04:25.12],(INFLECTION)
+[01:04:27.13],[selected smaller time window]
+[01:04:47.07],|they are still trying to fully understand interface|
+[01:06:11.14],"explaing again they can update view by clicking on access time"
+[01:07:46.25],|seems to be taking small break|
+[01:10:34.10],|still mainly thinking about the problem without interaction of vis|
+[01:12:57.23],(INFLECTION)
+[01:12:59.07],[playing around with table]
+[01:13:48.15],'looking for 44s activity during blue state'
+[01:18:55.01],(INFLECTION)
+[01:18:56.28],[looking at tail end of dataset in bnt]
+[01:19:25.14],[going to work their way backwards]
+[01:20:27.14],[setup table to look at largest request sizes]
+[01:21:16.13],(INFLECTION)
+[01:21:17.10],"explaining they can select things in table"
+[01:21:43.19],'a lot of information being sent to one ip over 8080'
+[01:22:10.29],"told them to find other events where this was being done"
+[01:23:38.07],'tired'
+[01:24:04.29],|a lot of internal table observations|
+[01:24:40.15],'upset they can select a filter by dest ip'
+[01:25:04.24],(INFLECTION)
+[01:25:05.21],[going through table looking for other 133 smart eno;ugh to use ctrl-f]
+[01:25:43.11],[uses this to select all 133 8080 events]
+[01:29:32.08],(END)

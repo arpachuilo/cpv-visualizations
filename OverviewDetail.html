@@ -6,8 +6,6 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
 
-  <script src='./data/video-links.js'></script>
-
   <script src='./scripts/util.js'></script>
   <script src='./scripts/Tooltip.js'></script>
   <script src='./scripts/drawBbox.js'></script>
@@ -51,6 +49,7 @@
         <option value='0'>Eye</option>
         <option value='1'>Mouse</option>
         <option value='2'>Both</option>
+        <option value='3'>Set Based</option>
       </select>
     </li>
   </ul>
@@ -59,15 +58,11 @@
 
     <div class='row' id='summary'>
       <div class='two columns'>
-        <span>Actions</span>
-        <ul id='summary-actions'></ul>
-      </div>
-      <div class='two columns'>
         <span>Headers</span>
         <ul id='summary-headers'></ul>
       </div>
 
-      <div class='eight columns'>
+      <div class='ten columns'>
         <div class='row'>
           <span>People of Interest: </span>
           <span id='poi'></span>
@@ -182,7 +177,6 @@
 
   function segmentClick (index) {
     selectedSummary = selected.summary[index]
-    console.log(selectedSummary)
     brushOverlay.setBrushExtent([selectedSummary.tStart, selectedSummary.tEnd])
     drawSummaryDetails(selectedSummary)
   }
@@ -203,6 +197,10 @@
 
     if (+document.getElementById('segset').value === 2) {
       selectedSeg = selected.bSegment
+    }
+
+    if (+document.getElementById('segset').value === 3) {
+      selectedSeg = selected.testSegment
     }
 
     selected.summary = actionSummary(selectedSeg, selected.loadedMouse)
@@ -244,8 +242,10 @@
       var p = {}
       p.index = index
       p.id = values[index]
-      d3.text('data/inflections/' + values[index] + '.csv', function (err, inflections) {
-        p.inflections = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+      d3.text('data/transcripts/' + values[index] + '.csv', function (err, inflections) {
+        p.transcripts = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+        p.hints = parseHints(p.transcripts)
+        p.inflections = parseInflections(p.transcripts)
         d3.text('data/eye/' + values[index] + '.csv', function(eye) {
           p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
           d3.json('data/mouse/' + values[index] + '.json', function (mouse) {
@@ -262,10 +262,12 @@
             var nBins = Math.ceil(p.xMax / (60 * 1000))
             p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
             p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
+            p.interactionTimeBin = timeBinIntoInteractions(p.loadedMouse, nBins)
 
             p.eSegment = segment(p.eyeTimeBin)
             p.mSegment = segment(p.mouseTimeBin)
             p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
+            p.testSegment = nPairBasedNoOverlap(p.interactionTimeBin, 2)
 
             dataTable.push(p)
 

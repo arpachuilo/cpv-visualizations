@@ -1,0 +1,63 @@
+[00:00:27.01],(START)
+[00:01:33.14],|getting familar with interface|
+[00:02:21.19],'looking for changes in prox state'
+[00:02:35.10],(INFLECTION)
+[00:02:43.13],[clicking through bars on single user to view their state changes]
+[00:04:48.01],[using slider and found change in user to blue state over an hour]
+[00:05:58.22],|seems to have good understanding of interface by now|
+[00:06:02.05],(INFLECTION)
+[00:06:38.09],"explained timestamp"
+[00:07:59.27],'not sure to pay attention to req or resp size'
+[00:08:19.15],[marking events with large sizes]
+[00:10:52.01],[removed previous flags]
+[00:10:57.14],(INFLECTION)
+[00:11:08.00],'looking at what when on during prox in classified states'
+[00:12:35.08],"explained slider won't update until mouse up or keyup"
+[00:16:45.17],[trying to pinpoint change to blue state within table]
+[00:18:47.20],"explained single employee leaking data and asked how they might do that"
+[00:19:42.20],'focusing on 51 because they had certain change to blue state without a green state'
+[00:21:46.03],(INLFECTION)
+[00:21:55.12],[scanning over 51s traffic]
+[00:22:56.12],[flagged large rez size over 8080 for 51]
+[00:24:02.25],'been looking for spikes in activity and anything suspicous during those times'
+[00:30:36.26],(H1)
+[00:31:12.29],'wondering if I should be worried about more than just blue state'
+[00:32:04.26],[still interested in 51]
+[00:34:20.24],(INFLECTION)
+[00:34:27.21],'was going back over start looking for others that did no prox to blue state'
+[00:36:21.14],(INFLECTION)
+[00:36:58.22],"explained there is no prox out of building state"
+[00:38:05.11],[back to looking at 51]
+[00:38:36.08],[scanning over various high points for 51 again]
+[00:40:00.20],'not sure who to focus and think focusing on too many would be difficult'
+[00:43:19.05],(INFLECTION)
+[00:43:20.05],'going to be looking for other people'
+[00:45:40.17],'looking for large spikes in traffic within small time window and common ips'
+[00:51:29.29],(INFLECTION)
+[00:51:36.08],'going through selecting blue states for time window and seeing if there is traffic during those times'
+[00:53:45.23],"explained clicking access time updates bnt"
+[00:56:31.20],[observing changes of when one extra ip is added]
+[00:57:05.05],|not sure they have full grasp on how to correlate blue states to their traffic at the exact time of event|
+[00:58:28.14],(H2)
+[00:58:59.17],(INFLECTION)
+[00:59:01.14],[back to 51]
+[00:59:19.05],|probably due to the fact they falgged an 8080 event by at the start|
+[01:02:25.20],(INFLECTION)
+[01:02:26.17],[focusing on 8080 for all in table]
+[01:02:38.29],[sorting by req size and notices large sizes using 8080 and flags them]
+[01:03:16.02],[doing the same for resp size]
+[01:03:56.28],[going through what they flagged]
+[01:04:14.02],'seems 31 was in blue state during an outbound event'
+[01:04:50.01],(INFLECTION)
+[01:04:51.01],'based on this going to look back at data during the day of this event'
+[01:06:50.07],'narrowed it down to 31 and 52'
+[01:07:26.00],'going over their prox buildings from start of month'
+[01:10:10.07],(INFLECTION)
+[01:10:11.25],[looking at traffic as a whole]
+[01:10:27.10],'seems like this dest ip has most largest req to 8080'
+[01:13:21.05],"asked if they noticed anything else similar between the two events flagged"
+[01:21:22.17],(INFLECTION)
+[01:21:24.13],'going to look for differences between the two events'
+[01:22:18.08],[really going through table fast for this through all the traffic for the src ips]
+[01:27:37.14],'was looking to see what else was going around the time of that event'
+[01:30:26.22],(END)

@@ -1,0 +1,71 @@
+[00:00:27.28],(START)
+[00:00:38.13],"explained think aloud"
+[00:00:47.09],'asked what exactly their goal was'
+[00:01:00.13],"goal - look for susicpus events"
+[00:01:54.16],[looking for weird ips]
+[00:03:02.26],[looking for pattern in ips]
+[00:04:24.27],(INFLECTION)
+[00:04:38.19],[zeroing in on certain people]
+[00:05:58.15],'asked about sizes for request/response'
+[00:07:06.08],(INFLECTION)
+[00:07:18.00],[going to look at these patterns of traffic for each employee]
+[00:09:36.26],'nothing seems out of ordinary'
+[00:11:46.13],'asked about how to lessen time viewed for a person'
+[00:12:32.21],(INFLECTION)
+[00:12:40.25],[repeating a previous task it seems looking at traffic patterns for each]
+[00:16:15.07],(INFLECTION)
+[00:16:24.10],[concentrating on certain person looking for dest ips that stick out]
+[00:19:27.00],[going to look for other people sending to certain dest ip]
+[00:19:54.11],(INFLECTION)
+[00:20:18.18],'realizig this dest ip is actually really common'
+[00:22:42.07],(INFLECTION)
+[00:22:49.14],[going to checkout another specific person looking for suspicous activity]
+[00:23:54.07],'keeping eye on person 27'
+[00:24:23.03],(INFLECTION)
+[00:24:26.22],[realizes person is in blue state]
+[00:25:53.22],|does not realize the views are not in sync|
+[00:27:17.07],(H1)
+[00:27:29.14],(INFLECTION)
+[00:28:38.11],[starting at first day, going to look at blue state people]
+[00:33:29.08],[looking for someone getting data from 8080 in some regular pattern]
+[00:34:44.08],'have not used graph thing'
+[00:34:58.15],(INFLECTION)
+[00:35:04.23],|attempting to use nearly useless graph|
+[00:36:24.04],'going to keep in mind person 10 is suspicious'
+[00:37:11.04],(INFLECTION)
+[00:37:14.27],|back to previous strategy of not using the graph|
+[00:39:53.01],'53 seems suspicious'
+[00:40:49.28],(INFLECTION)
+[00:40:55.28],[going to look at their people who they thought were susipcious in aggregate]
+[00:42:13.29],[looking for dest ip that may be in common]
+[00:48:39.22],(INFLECTION)
+[00:49:05.15],[flagged events they found susicpoius to view just those]
+[00:50:09.27],(INFLECTION)
+[00:50:12.19],[just going to look at 58/53 with previous method]
+[00:51:40.23],[added in 58]
+[00:51:57.19],(INFLECTION)
+[00:52:00.27],[just going through table spamming next button]
+[00:53:05.08],[looking for biggest request involving 8080]
+[00:55:10.09],(INFLECTION)
+[00:55:40.08],(H2)
+[00:56:06.06],[looking at largest req size for all people/time]
+[01:00:20.12],(INFLECTION)
+[01:00:23.27],[taking out non 8080 results in their selected]
+[01:02:05.29],[sorting by access time looking for groupings]
+[01:06:51.03],'53 still susicpus for them'
+[01:09:12.10],(INFLECTION)
+[01:09:14.10],[looking for 8080 over a certain ip and selecting them]
+[01:10:24.13],'seems more susicpus to work after 6'
+[01:11:59.20],(INFLECTION)
+[01:12:03.27],[back to 53 looking for dest ips in common between 53 and 57]
+[01:17:12.05],(INFLECTION)
+[01:17:14.24],[looking at specific hours of operation for 53]
+[01:20:08.13],(INFLECTION)
+[01:20:11.12],[reducing time window of observed events for once to understand their traffic on a specific day]
+[01:23:14.09],"explained how it could be possible for someone to use other peoples computers to send leaks"
+[01:24:03.01],(INFLECTION)
+[01:24:08.27],[looking at selected traffic for other computers sending to certain destip while in blue state]
+[01:26:22.24],(INFLECTION)
+[01:28:07.08],[going to look at the next day in prox view with same task]
+[01:30:22.17],[shift ip traffic to next day]
+[01:31:09.00],(END)

@@ -1,0 +1,47 @@
+[00:01:31.23],(START)
+[00:01:52.21],'starting by looking for an external destination ip'
+[00:03:15.04],[clicking through table]
+[00:07:51.10],[thought some dest ip was susicpous but found too many talking to it]
+[00:08:57.25],'found event with unusally large req size over fairly unique ip'
+[00:09:57.19],(INFLECTION)
+[00:09:58.15],[going to inspect that event more]
+[00:10:26.16],[trying to use the graph to see if ip is unique]
+[00:11:43.15],'I selected 54 in the prox box'
+[00:14:11.04],(INFLECTION)
+[00:14:13.04],'going to look for email outside of 37'
+[00:16:26.02],[attampted to secondary sort]
+[00:16:52.12],'don't see any suspicous mail but there are too many pages of data'
+[00:21:48.05],(INFLECTION)
+[00:21:48.21],[looking at user 0]
+[00:25:09.06],'looking at weekends'
+[00:25:17.21],|not sure what exactly they are looking for seems very exploratory|
+[00:28:34.03],'trying to look for people in classified but not prox'd in'
+[00:31:08.14],'if they share office could they use other persons computer'
+[00:31:27.24],"possible"
+[00:31:54.01],(H1)
+[00:33:53.02],(INFLECTION)
+[00:33:52.28],'looking to see if there are events going on when they are in classified'
+[00:34:15.01],[going about this in a coarse manner using histograms]
+[00:51:47.16],|still using same old tactic|
+[01:02:07.20],(H2)
+[01:02:22.16],(INFLECTION)
+[01:02:23.05],[went straight to sorting by socket]
+[01:02:51.06],[looking for all 8080 events and clicking on access time for them]
+[01:04:23.01],(INFLECTION)
+[01:04:33.26],[currently looking at last week of traffic and clicking all 8080s]
+[01:07:24.09],[found event of traffic during blue state]
+[01:07:48.29],"anything else you notice about that event"
+[01:08:00.06],'huge request but not sure that helps me'
+[01:10:00.23],[starting clicking through port 80 events]
+[01:11:26.06],'all my flagged events are to same dest ip'
+[01:13:59.17],(INFLECTION)
+[01:14:01.08],[sorted by request size]
+[01:14:13.12],'yeah there a lot of similar events here now'
+[01:18:46.20],[going back through flagged and checking them]
+[01:22:41.02],"anything else you can find that is susipcous?"
+[01:22:59.13],'ugh maybe'
+[01:23:15.08],|at this point they pretty much found all the bad events|
+[01:23:18.04],(INFLECTION)
+[01:28:03.19],|really not sure what they are looking for at this point considering they finished the given task|
+[01:30:04.21],'noticed 30 has more connections to 8080'
+[01:30:57.02],(END)

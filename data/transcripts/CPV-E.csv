@@ -1,0 +1,58 @@
+[00:00:24.12],(START)
+[00:00:40.26],[wants to look for outbound traffic during blue state]
+[00:01:04.01],[moving the slider along with at most hour resolution]
+[00:01:40.28],[clicked on a blue state]
+[00:02:51.05],[clicked on 2nd blue state]
+[00:03:16.27],(INFLECTION)
+[00:03:20.22],[starting to look through the table]
+[00:03:42.21],'asked for faster way to sift through data'
+[00:03:50.28],"told them they could reduce size of data via time"
+[00:04:56.04],(INFLECTION)
+[00:04:58.01],[backing to browsing through slider]
+[00:06:04.02],(INFLECTION)
+[00:06:06.03],[selected another blue state]
+[00:06:24.12],[looking through table]
+[00:06:37.20],|seems to have strategy they are going to repeat|
+[00:08:42.25],(INFLECTION)
+[00:08:51.12],[lost track so they are starting over again]
+[00:09:29.19],|mainly just doing the strategy they defined - look for blue - inspect table|
+[00:14:46.06],'realized they were reading timestamp wrong'
+[00:15:45.10],(INFLECTION)
+[00:15:47.11],[startintg over again with same strategy]
+[00:24:34.22],|good example of brute force strategy that should work|
+[00:29:02.08],|still strong with same strategy|
+[00:31:04.28],(H1)
+[00:32:01.18],'realizes they still got 29 more days to go'
+[00:36:01.00],|still keeping it up|
+[00:52:06.23],[flagged someone who had mail going off during blue state]
+[00:56:55.18],(H2)
+[00:57:38.04],(INFLECTION)
+[00:57:44.02],[focusing of 44 seeing if they use port 8080 in a blue state]
+[00:58:48.09],[prunes time window they want to use to a weeks worth]
+[00:59:29.05],[pounding through table looking for 8080 port]
+[01:00:04.22],(INFLECTION)
+[01:00:05.22],[now looking at whole month worth on 44 sorted by 8080]
+[01:00:38.12],(INFLECTION)
+[01:00:43.04],[back to just a weeks worth and sliding the window down checking all 8080 instances]
+[01:02:21.16],[has cleared 44]
+[01:02:44.10],(INFLECTION)
+[01:02:45.05],'thinking they should focus on dest ip that is outbound'
+[01:03:24.26],'going to focus on that one susipcius mail ip they found'
+[01:04:37.21],"explained how they are leaking so it might be large in file size"
+[01:06:06.25],(INFLECTION)
+[01:06:11.10],[selects everyone to gain better understanding of traffic sizes]
+[01:06:49.29],'realizes reqsize got large'
+[01:09:29.19],'wondering where the line on suspicious is'
+[01:09:53.06],"explained how other people have be piggybacking"
+[01:12:25.08],(INFLECTION)
+[01:12:26.28],[still focused 44]
+[01:12:52.21],"told them to look for someone else"
+[01:13:23.29],(INFLECTION)
+[01:13:25.13],[going through table over 8080 matching ip to state in bnt]
+[01:18:59.24],[flagged someone because they shared room with previous guy with a large rez size over 8080]
+[01:20:39.04],[found a baddie with large rez size]
+[01:21:54.15],"asked if there were any othe attributes they might be interested in"
+[01:22:18.16],'said they might be interested in dest ip'
+[01:23:44.26],(INFLECTION)
+[01:23:45.28],[pounding through table looking for dest ip over whole dataset]
+[01:29:45.20],(END)

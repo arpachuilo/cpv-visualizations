@@ -97,6 +97,79 @@ function scrollLeft () {
   }
 }
 
+// almost same as timeBinInteractionData
+// but not generalizing into aois
+function timeBinIntoInteractions (data, numBins = 20) {
+  // var subKeys = {
+  //   'officesCleared': 'offices',
+  //   'officeMouseEnter': 'offices',
+  //   'officeClicked': 'offices',
+  //   'sliderMoved': 'offices',
+  //   'accessTimeClicked': 'table',
+  //   'histogramBrushStart': 'overviewHist',
+  //   'histogramBrushEnd': 'overviewHist',
+  //   'headerClicked': 'table',
+  //   'rowClicked': 'table',
+  //   'rowMouseOver': 'table',
+  //   'tableToggleSelected': 'table',
+  //   'pageChange': 'table',
+  //   'histogramBarClick': 'detailHist',
+  //   'histogramBarMouseEnter': 'detailHist',
+  //   'graphNodeMouseEnter': 'graph',
+  //   'infoHover': 'info'
+  // }
+
+  var timeExtent = [0, d3.max(data, function (d) {
+    return +d.date
+  })]
+
+  var elapsedTime = timeExtent[1] - timeExtent[0]
+  var interval = elapsedTime / numBins
+
+  var initBins = []
+  for (var i = 1; i <= numBins; i++) {
+    initBins.push(
+      data.filter(function (d) {
+        return timeExtent[0] + interval * (i - 1) <= d.date &&
+          d.date < timeExtent[0] + interval * i &&
+          d.id !== 'mouseEnter'
+      })
+    )
+  }
+
+  var bins = []
+  for (var i = 0; i < initBins.length; i++) {
+    bins.push({
+      'startTime': timeExtent[0] + interval * i,
+      'endTime': timeExtent[0] + interval * (i + 1),
+      'officesCleared': 0,
+      'officeMouseEnter': 0,
+      'officeClicked': 0,
+      'sliderMoved': 0,
+      'accessTimeClicked': 0,
+      'histogramBrushStart': 0,
+      'histogramBrushEnd': 0,
+      'headerClicked': 0,
+      'rowClicked': 0,
+      'rowMouseOver': 0,
+      'tableToggleSelected': 0,
+      'pageChange': 0,
+      'histogramBarClick': 0,
+      'histogramBarMouseEnter': 0,
+      'graphNodeMouseEnter': 0,
+      'infoHover': 0,
+      'total': 0
+    })
+
+    for (var j = 0; j < initBins[i].length; j++) {
+      var key = initBins[i][j].id
+      bins[i][key] += 1
+      bins[i].total += 1
+    }
+  }
+  return bins
+}
+
 function timeBinInteractionData (data, numBins = 20) {
   var subKeys = {
     'officesCleared': 'offices',
@@ -692,6 +765,23 @@ function maxKey (o) {
   return key
 }
 
+function orderKeysByAmount (data) {
+  var arr = []
+  Object.keys(data).forEach(function (key) {
+    if (key !== 'startTime' && key !== 'endTime' && key !== 'total') {
+      arr.push({
+        key: key,
+        n: +data[key]
+      })
+    }
+  })
+  arr.sort(function (a, b) {
+    return b.n - a.n
+  })
+
+  return arr
+}
+
 function segment (data) {
   var tBreaks = [0]
   var prevKey = maxKey(data[0])
@@ -720,6 +810,62 @@ function pairwiseSegment (d1, d2) {
       tBreaks.push(d1[i].endTime)
     }
   }
+  return tBreaks
+}
+
+function containAtleastOne (a, b) {
+  var result = false
+  a.map(function (d) {
+    return d.key
+  }).forEach(function (d) {
+    result = b.map(function (e) {
+      return e.key
+    }).includes(d) || result
+  })
+
+  return result
+}
+
+function containsAll (a, b) {
+  var result = true
+
+  a.map(function (d) {
+    return d.key
+  }).forEach(function (d) {
+    result = b.map(function (e) {
+      return e.key
+    }).includes(d) && result
+  })
+
+  return result
+}
+
+function nPairBasedNoOverlap (data, depth) {
+  var tBreaks = [0]
+
+  var initOrdering = orderKeysByAmount(data[0])
+  var prevKeys = []
+  for (var k = 0; k < depth; k++) {
+    prevKeys.push(initOrdering[k])
+  }
+
+  for (var i = 0; i < data.length; i++) {
+    var tempOrdering = orderKeysByAmount(data[i])
+    var tempKeys = []
+    for (var k = 0; k < depth; k++) {
+      tempKeys.push(tempOrdering[k])
+    }
+
+    if (!(containAtleastOne(prevKeys, tempKeys))) {
+      tBreaks.push(data[i].startTime)
+      prevKeys = tempKeys
+    }
+
+    if (i === (data.length - 1)) {
+      tBreaks.push(data[i].endTime)
+    }
+  }
+
   return tBreaks
 }
 
@@ -772,6 +918,7 @@ function actionSummary (seg, data) {
   calcHeaders(bin)
   return bin
 }
+
 //[00:26:17.07]
 function inflectionTimeFix (data) {
   var offset = getMS(data[0].time)
@@ -797,4 +944,26 @@ function getMS (t) {
   time += s * 1000
 
   return time
+}
+
+function parseHints (transcript) {
+  var breaks = []
+  transcript.forEach(function (d) {
+    if (d.label === '(START)' || d.label === '(H1)' || d.label === '(H2)' || d.label === '(END)') {
+      breaks.push(d)
+    }
+  })
+
+  return breaks
+}
+
+function parseInflections (transcript) {
+  var breaks = []
+  transcript.forEach(function (d) {
+    if (d.label === '(START)' || d.label === '(INFLECTION)' || d.label === '(END)') {
+      breaks.push(d)
+    }
+  })
+
+  return breaks
 }

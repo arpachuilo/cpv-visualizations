@@ -37,56 +37,56 @@ function drawSummaryDetails (obj) {
     headerList.parentNode.appendChild(moreHeaderButton)
   }
 
-  var actionList = document.getElementById('summary-actions')
-  while (actionList.firstChild) {
-    actionList.removeChild(actionList.firstChild)
-  }
+  // var actionList = document.getElementById('summary-actions')
+  // while (actionList.firstChild) {
+  //   actionList.removeChild(actionList.firstChild)
+  // }
 
-  // actions
-  var actions = []
-  Object.keys(obj).forEach(function (key) {
-    if (key !== 'data' && key !== 'headers' && key !== 'tEnd' && key !== 'tStart') {
-      actions.push({
-        key: key,
-        n: obj[key]
-      })
-    }
-  })
-  actions.sort(function (a, b) {
-    return b.n - a.n
-  })
-
-  for (var i = 0; i < actions.length; i++) {
-    var li = document.createElement('li')
-    li.textContent = actions[i].key + ': ' + actions[i].n
-    if (i > 2) {
-      li.classList.add('hidden')
-      li.classList.add('actionHidden')
-    }
-    actionList.appendChild(li)
-  }
-
-  if (document.contains(document.getElementById('actionMoreButton'))) {
-    document.getElementById('actionMoreButton').remove()
-  }
-  if (actions.length > 3) {
-    var moreActionButton = document.createElement('a')
-    moreActionButton.id = 'actionMoreButton'
-    moreActionButton.textContent = 'more'
-    moreActionButton.onclick = function () {
-      var mb = document.getElementById('actionMoreButton')
-      if (mb.textContent === 'more') {
-        mb.textContent = 'less'
-      } else {
-        mb.textContent = 'more'
-      }
-      d3.selectAll('.actionHidden')
-        .classed('hidden', function () {
-          return !d3.select(this).classed('hidden')
-        })
-    }
-    actionList.parentNode.appendChild(moreActionButton)
-  }
+  // // actions
+  // var actions = []
+  // Object.keys(obj).forEach(function (key) {
+  //   if (key !== 'data' && key !== 'headers' && key !== 'tEnd' && key !== 'tStart') {
+  //     actions.push({
+  //       key: key,
+  //       n: obj[key]
+  //     })
+  //   }
+  // })
+  // actions.sort(function (a, b) {
+  //   return b.n - a.n
+  // })
+  //
+  // for (var i = 0; i < actions.length; i++) {
+  //   var li = document.createElement('li')
+  //   li.textContent = actions[i].key + ': ' + actions[i].n
+  //   if (i > 2) {
+  //     li.classList.add('hidden')
+  //     li.classList.add('actionHidden')
+  //   }
+  //   actionList.appendChild(li)
+  // }
+  //
+  // if (document.contains(document.getElementById('actionMoreButton'))) {
+  //   document.getElementById('actionMoreButton').remove()
+  // }
+  // if (actions.length > 3) {
+  //   var moreActionButton = document.createElement('a')
+  //   moreActionButton.id = 'actionMoreButton'
+  //   moreActionButton.textContent = 'more'
+  //   moreActionButton.onclick = function () {
+  //     var mb = document.getElementById('actionMoreButton')
+  //     if (mb.textContent === 'more') {
+  //       mb.textContent = 'less'
+  //     } else {
+  //       mb.textContent = 'more'
+  //     }
+  //     d3.selectAll('.actionHidden')
+  //       .classed('hidden', function () {
+  //         return !d3.select(this).classed('hidden')
+  //       })
+  //   }
+  //   actionList.parentNode.appendChild(moreActionButton)
+  // }
 
   // pois
   var poi = []
