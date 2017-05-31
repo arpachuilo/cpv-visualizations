@@ -1,3 +1,6 @@
+# RUN AS: python processMouseData-PV.py [FILENAME]
+# NOTE: Things were done to make this data less messy via this script
+
 import matplotlib.path as mplPath
 import numpy as np
 import json
@@ -15,7 +18,6 @@ infoBB = mplPath.Path(np.array([[info[0], info[1]],
                      [info[0] + info[2], info[1] + info[3]],
                      [info[1], info[1] + info[3]]]))
 
-#
 
 # Load mouse interaction data
 jsonData = []

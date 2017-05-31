@@ -2,6 +2,7 @@ function MultipleHeatmaps (el, fn) {
   var el = el
   var fn = fn
 
+  var type = 'CPV'
   var eyeData = []
   var mouseData = []
   var segments = []
@@ -61,19 +62,25 @@ function MultipleHeatmaps (el, fn) {
       bottomContainer.appendChild(leftContainer)
       bottomContainer.appendChild(rightContainer)
 
-      container.appendChild(topContainer)
       container.appendChild(bottomContainer)
+      container.appendChild(topContainer)
 
       el.appendChild(container)
       timeBar(leftContainer, segments[0], segments[segments.length - 1], segments[i], segments[i + 1], inflections)
 
       summarize(topContainer, summary[i])
-
       Heatmap(heatmap)
+        .setT(type)
         .setE(e)
         .setM(m)
         .draw()
     }
+  }
+
+  this.setType = function (_) {
+    if (!arguments.length) return type
+    type = _
+    return this
   }
 
   this.setSummaryInfo = function (_) {

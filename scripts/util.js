@@ -99,25 +99,7 @@ function scrollLeft () {
 
 // almost same as timeBinInteractionData
 // but not generalizing into aois
-function timeBinIntoInteractions (data, numBins = 20) {
-  // var subKeys = {
-  //   'officesCleared': 'offices',
-  //   'officeMouseEnter': 'offices',
-  //   'officeClicked': 'offices',
-  //   'sliderMoved': 'offices',
-  //   'accessTimeClicked': 'table',
-  //   'histogramBrushStart': 'overviewHist',
-  //   'histogramBrushEnd': 'overviewHist',
-  //   'headerClicked': 'table',
-  //   'rowClicked': 'table',
-  //   'rowMouseOver': 'table',
-  //   'tableToggleSelected': 'table',
-  //   'pageChange': 'table',
-  //   'histogramBarClick': 'detailHist',
-  //   'histogramBarMouseEnter': 'detailHist',
-  //   'graphNodeMouseEnter': 'graph',
-  //   'infoHover': 'info'
-  // }
+function timeBinIntoInteractions (data, numBins = 20, type = 'CPV') {
 
   var timeExtent = [0, d3.max(data, function (d) {
     return +d.date
@@ -132,34 +114,47 @@ function timeBinIntoInteractions (data, numBins = 20) {
       data.filter(function (d) {
         return timeExtent[0] + interval * (i - 1) <= d.date &&
           d.date < timeExtent[0] + interval * i &&
-          d.id !== 'mouseEnter'
+          d.id !== 'mouseEnter' && d.id !== 'MouseEnter'
       })
     )
   }
 
   var bins = []
   for (var i = 0; i < initBins.length; i++) {
-    bins.push({
-      'startTime': timeExtent[0] + interval * i,
-      'endTime': timeExtent[0] + interval * (i + 1),
-      'officesCleared': 0,
-      'officeMouseEnter': 0,
-      'officeClicked': 0,
-      'sliderMoved': 0,
-      'accessTimeClicked': 0,
-      'histogramBrushStart': 0,
-      'histogramBrushEnd': 0,
-      'headerClicked': 0,
-      'rowClicked': 0,
-      'rowMouseOver': 0,
-      'tableToggleSelected': 0,
-      'pageChange': 0,
-      'histogramBarClick': 0,
-      'histogramBarMouseEnter': 0,
-      'graphNodeMouseEnter': 0,
-      'infoHover': 0,
-      'total': 0
-    })
+    if (type === 'CPV') {
+      bins.push({
+        'startTime': timeExtent[0] + interval * i,
+        'endTime': timeExtent[0] + interval * (i + 1),
+        'officesCleared': 0,
+        'officeMouseEnter': 0,
+        'officeClicked': 0,
+        'sliderMoved': 0,
+        'accessTimeClicked': 0,
+        'histogramBrushStart': 0,
+        'histogramBrushEnd': 0,
+        'headerClicked': 0,
+        'rowClicked': 0,
+        'rowMouseOver': 0,
+        'tableToggleSelected': 0,
+        'pageChange': 0,
+        'histogramBarClick': 0,
+        'histogramBarMouseEnter': 0,
+        'graphNodeMouseEnter': 0,
+        'infoHover': 0,
+        'total': 0
+      })
+    } else {
+      bins.push({
+        'startTime': timeExtent[0] + interval * i,
+        'endTime': timeExtent[0] + interval * (i + 1),
+        'yAxisChanged': 0,
+        'xAxisChanged': 0,
+        'AddedTypeFilter': 0,
+        'PokemonSelected': 0,
+        'AddedGenerationFilter': 0,
+        'total': 0
+      })
+    }
 
     for (var j = 0; j < initBins[i].length; j++) {
       var key = initBins[i][j].id
@@ -170,7 +165,7 @@ function timeBinIntoInteractions (data, numBins = 20) {
   return bins
 }
 
-function timeBinInteractionData (data, numBins = 20) {
+function timeBinInteractionData (data, numBins = 20, type = 'CPV') {
   var subKeys = {
     'officesCleared': 'offices',
     'officeMouseEnter': 'offices',
@@ -201,29 +196,54 @@ function timeBinInteractionData (data, numBins = 20) {
   for (var i = 1; i <= numBins; i++) {
     initBins.push(
       data.filter(function (d) {
-        return timeExtent[0] + interval * (i - 1) <= d.date &&
-          d.date < timeExtent[0] + interval * i &&
-          d.id !== 'mouseEnter'
+        if (type === 'CPV') {
+          return timeExtent[0] + interval * (i - 1) <= d.date &&
+            d.date < timeExtent[0] + interval * i &&
+            d.id !== 'mouseEnter'
+        } else {
+          return timeExtent[0] + interval * (i - 1) <= d.date &&
+            d.date < timeExtent[0] + interval * i
+        }
       })
     )
   }
 
   var bins = []
   for (var i = 0; i < initBins.length; i++) {
-    bins.push({
-      'startTime': timeExtent[0] + interval * i,
-      'endTime': timeExtent[0] + interval * (i + 1),
-      'overviewHist': 0,
-      'detailHist': 0,
-      'graph': 0,
-      'table': 0,
-      'offices': 0,
-      'info': 0,
-      'total': 0
-    })
+    if (type === 'CPV') {
+      bins.push({
+        'startTime': timeExtent[0] + interval * i,
+        'endTime': timeExtent[0] + interval * (i + 1),
+        'overviewHist': 0,
+        'detailHist': 0,
+        'graph': 0,
+        'table': 0,
+        'offices': 0,
+        'info': 0,
+        'total': 0
+      })
+    } else {
+      bins.push({
+        'startTime': timeExtent[0] + interval * i,
+        'endTime': timeExtent[0] + interval * (i + 1),
+        'BarChart': 0,
+        'Scatterplot': 0,
+        'Starplot': 0,
+        'QuestionArea': 0,
+        'TypeFilters': 0,
+        'xAxisSelection': 0,
+        'yAxisSelection': 0,
+        'total': 0
+      })
+    }
 
     for (var j = 0; j < initBins[i].length; j++) {
-      var key = subKeys[initBins[i][j].id]
+      var key = ''
+      if (type === 'CPV') {
+        key = subKeys[initBins[i][j].id]
+      } else {
+        key = initBins[i][j].aoi
+      }
       bins[i][key] += 1
       bins[i].total += 1
     }
@@ -231,7 +251,7 @@ function timeBinInteractionData (data, numBins = 20) {
   return bins
 }
 
-function timeBinEyeData (data, numBins = 20) {
+function timeBinEyeData (data, numBins = 20, type = 'CPV') {
 
   var timeExtent = [0, d3.max(data, function (d) {
     return +d.time
@@ -254,17 +274,32 @@ function timeBinEyeData (data, numBins = 20) {
 
   var bins = []
   for (var i = 0; i < initBins.length; i++) {
-    bins.push({
-      'startTime': timeExtent[0] + interval * i,
-      'endTime': timeExtent[0] + interval * (i + 1),
-      'overviewHist': 0,
-      'detailHist': 0,
-      'graph': 0,
-      'table': 0,
-      'offices': 0,
-      'info': 0,
-      'total': 0
-    })
+    if (type === 'CPV') {
+      bins.push({
+        'startTime': timeExtent[0] + interval * i,
+        'endTime': timeExtent[0] + interval * (i + 1),
+        'overviewHist': 0,
+        'detailHist': 0,
+        'graph': 0,
+        'table': 0,
+        'offices': 0,
+        'info': 0,
+        'total': 0
+      })
+    } else {
+      bins.push({
+        'startTime': timeExtent[0] + interval * i,
+        'endTime': timeExtent[0] + interval * (i + 1),
+        'BarChart': 0,
+        'Scatterplot': 0,
+        'Starplot': 0,
+        'QuestionArea': 0,
+        'TypeFilters': 0,
+        'xAxisSelection': 0,
+        'yAxisSelection': 0,
+        'total': 0
+      })
+    }
 
     for (var j = 0; j < initBins[i].length; j++) {
       var key = initBins[i][j].aoi
@@ -728,38 +763,75 @@ function generateActionSequence (data, bounds = false, key = false) {
   }
 }
 
-function maxKey (o) {
+function maxKey (o, type = 'CPV') {
   var num = -1
   var key = ''
 
-  if (o.overviewHist > num) {
-    num = o.overviewHist
-    key = 'overviewHist'
-  }
+  if (type === 'CPV') {
+    if (o.overviewHist > num) {
+      num = o.overviewHist
+      key = 'overviewHist'
+    }
 
-  if (o.detailHist > num) {
-    num = o.detailHist
-    key = 'detailHist'
-  }
+    if (o.detailHist > num) {
+      num = o.detailHist
+      key = 'detailHist'
+    }
 
-  if (o.graph > num) {
-    num = o.graph
-    key = 'graph'
-  }
+    if (o.graph > num) {
+      num = o.graph
+      key = 'graph'
+    }
 
-  if (o.table > num) {
-    num = o.table
-    key = 'table'
-  }
+    if (o.table > num) {
+      num = o.table
+      key = 'table'
+    }
 
-  if (o.offices > num) {
-    num = o.offices
-    key = 'offices'
-  }
+    if (o.offices > num) {
+      num = o.offices
+      key = 'offices'
+    }
 
-  if (o.info > num) {
-    num = o.info
-    key = 'info'
+    if (o.info > num) {
+      num = o.info
+      key = 'info'
+    }
+  } else {
+    if (o.BarChart > num) {
+      num = o.BarChart
+      key = 'BarChart'
+    }
+
+    if (o.Scatterplot > num) {
+      num = o.Scatterplot
+      key = 'Scatterplot'
+    }
+
+    if (o.Starplot > num) {
+      num = o.Starplot
+      key = 'Starplot'
+    }
+
+    if (o.QuestionArea > num) {
+      num = o.QuestionArea
+      key = 'QuestionArea'
+    }
+
+    if (o.TypeFilters > num) {
+      num = o.TypeFilters
+      key = 'TypeFilters'
+    }
+
+    if (o.xAxisSelection > num) {
+      num = o.xAxisSelection
+      key = 'xAxisSelection'
+    }
+
+    if (o.yAxisSelection > num) {
+      num = o.yAxisSelection
+      key = 'yAxisSelection'
+    }
   }
 
   return key
@@ -782,13 +854,13 @@ function orderKeysByAmount (data) {
   return arr
 }
 
-function segment (data) {
+function segment (data, type = 'CPV') {
   var tBreaks = [0]
-  var prevKey = maxKey(data[0])
+  var prevKey = maxKey(data[0], type)
   for (var i = 0; i < data.length; i++) {
-    if (prevKey !== maxKey(data[i])) {
+    if (prevKey !== maxKey(data[i], type)) {
       tBreaks.push(data[i].startTime)
-      prevKey = maxKey(data[i])
+      prevKey = maxKey(data[i], type)
     }
     if (i === (data.length - 1)) {
       tBreaks.push(data[i].endTime)
@@ -797,11 +869,11 @@ function segment (data) {
   return tBreaks
 }
 
-function pairwiseSegment (d1, d2) {
+function pairwiseSegment (d1, d2, type = 'CPV') {
   var tBreaks = [0]
-  var prevKey = maxKey(d1[0]) + '-' + maxKey(d2[0])
+  var prevKey = maxKey(d1[0], type) + '-' + maxKey(d2[0], type)
   for (var i = 0; i < d1.length; i++) {
-    var tempKey = maxKey(d1[i]) + '-' + maxKey(d2[i])
+    var tempKey = maxKey(d1[i], type) + '-' + maxKey(d2[i], type)
     if (prevKey !== tempKey) {
       tBreaks.push(d1[i].startTime)
       prevKey = tempKey

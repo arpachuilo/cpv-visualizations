@@ -1,4 +1,6 @@
-# NOTE: Trim time based on ids
+# RUN AS ./processEyeData-CPV.py [FILENAME] [TIMEOFFSET]
+
+# NOTE: Trim time based on ids (offset)
 # CPV-A: 1479489115000
 # CPV-B: 1479496740000
 # CPV-C: 1479521438000

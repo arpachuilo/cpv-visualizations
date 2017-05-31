@@ -49,24 +49,25 @@ function timeBar (selection, tMin, tMax, t0, t1, inflections) {
       .attr('fill', '#FF7F00')
   }
 
-  svg.append('text')
-    .attr('x', margin.left)
-    .attr('dx', -2)
-    .attr('y', margin.top + fontYOffset)
-    .attr('text-anchor', 'end')
-    .text(moment.duration(tMin, 'ms').format('m:ss'))
+  var t0offset = (scale(t0) >  margin.top + fontYOffset) ? scale(t0) :  margin.top + fontYOffset
+  var t1offset = (scale(t1) - t0offset > 15) ? scale(t1) : t0offset + 15
+
+  if (scale(t0) + 15 > chartHeight) {
+    t0offset = chartHeight - 15
+    t1offset = chartHeight
+  }
 
   svg.append('text')
     .attr('x', margin.left)
     .attr('dx', -2)
-    .attr('y', chartHeight / 2)
+    .attr('y', t0offset)
     .attr('text-anchor', 'end')
     .text(moment.duration(t0, 'ms').format('m:ss'))
 
   svg.append('text')
     .attr('x', margin.left)
     .attr('dx', -2)
-    .attr('y', chartHeight)
+    .attr('y', t1offset)
     .attr('text-anchor', 'end')
-    .text(moment.duration(tMax, 'ms').format('m:ss'))
+    .text(moment.duration(t1, 'ms').format('m:ss'))
 }

@@ -5,6 +5,7 @@ function Heatmap (canvas) {
 
   var e = []
   var m = []
+  var t = 'CPV'
 
   var r = 3
   var x = d3.scaleLinear()
@@ -25,8 +26,9 @@ function Heatmap (canvas) {
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-    var img = document.getElementById('templateImg')
+    var img = (t === 'CPV')
+     ? document.getElementById('templateImgCPV')
+     : document.getElementById('templateImgPV')
     ctx.drawImage(img, 0, 0, 1920, 1080, 0, 0, canvas.width, canvas.height)
 
     // Draw eye dots
@@ -46,6 +48,12 @@ function Heatmap (canvas) {
       ctx.fill()
     }
 
+    return this
+  }
+
+  this.setT = function (_) {
+    if (!arguments.length) return t
+    t = _
     return this
   }
 

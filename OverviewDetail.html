@@ -29,18 +29,18 @@
   <ul id='nav'>
     <li class='nav-item'><a href='VideoHeatmap.html'>Video Heatmap</a></li>
     <li class='nav-item'><a class='active' href='OverviewDetail.html'>Overview</a></li>
-    <li class='nav-item'><a href='SegmentedHeatmap.html'>Segmented Heatmap</a></li>
+    <li class='nav-item'><a href='SegmentedHeatmap.html'>Segmented Heatmaps</a></li>
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>CPV-C</option>
-        <option value='1'>CPV-D</option>
-        <option value='2'>CPV-E</option>
-        <option value='3'>CPV-F</option>
-        <option value='4'>CPV-G</option>
-        <option value='5'>CPV-H</option>
-        <option value='6'>CPV-I</option>
-        <option value='7'>CPV-J</option>
+        <option value='0'>Cyber-C</option>
+        <option value='1'>Cyber-D</option>
+        <option value='2'>Cyber-E</option>
+        <option value='3'>Cyber-F</option>
+        <option value='4'>Cyber-G</option>
+        <option value='5'>Cyber-H</option>
+        <option value='6'>Cyber-I</option>
+        <option value='7'>Cyber-J</option>
       </select>
     </li>
     <li class='nav-item-right'>
@@ -54,7 +54,7 @@
     </li>
   </ul>
 
-  <div class='row'>
+  <div class='row' id='main'>
 
     <div class='row' id='summary'>
       <div class='two columns'>
@@ -93,7 +93,7 @@
       <div class='four columns'>
         <div id='app-context-container'>
           <div id='app-context'>
-            <img id='app-img' src='app.png' />
+            <img id='app-img' src='cpv-app.png' />
             <svg id='bbox-overlay'></svg>
           </div>
         </div>

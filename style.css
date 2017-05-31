@@ -1,5 +1,6 @@
 body {
   font-family: 'Roboto', sans-serif;
+  margin: 0 0 0 0;
 }
 
 .hidden {
@@ -16,7 +17,18 @@ body {
   padding: 0 0 0 0;
 }
 
-#templateImg {
+#main {
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+#templateImgCPV {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
+
+#templateImgPV {
   visibility: hidden;
   height: 0;
   width: 0;
@@ -31,12 +43,18 @@ body {
 }
 
 canvas, img {
-  margin: 1em auto;
+  margin-top: 1em;
+  margin-bottom: 0;
+  margin-right: auto;
+  margin-left: auto;
   border: 1px solid black;
 }
 
 .timebar {
-  margin: 1em auto;
+  margin-top: 1em;
+  margin-bottom: 0;
+  margin-right: auto;
+  margin-left: auto;
   shape-rendering: crispEdges;
 }
 
@@ -52,6 +70,7 @@ canvas, img {
 
 #nav {
   list-style-type: none;
+  text-align: right;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -65,7 +84,8 @@ canvas, img {
 }
 
 .nav-item-right {
-  float: right;
+  display: inline;
+  margin: auto;
 }
 
 .nav-item a {

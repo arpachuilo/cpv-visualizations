@@ -29,18 +29,23 @@
   <ul id='nav'>
     <li class='nav-item'><a href='VideoHeatmap.html'>Video Heatmap</a></li>
     <li class='nav-item'><a href='OverviewDetail.html'>Overview</a></li>
-    <li class='nav-item'><a class='active' href='SegmentedHeatmap.html'>Segmented Heatmap</a></li>
+    <li class='nav-item'><a class='active' href='SegmentedHeatmap.html'>Segmented Heatmaps</a></li>
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>CPV-C</option>
-        <option value='1'>CPV-D</option>
-        <option value='2'>CPV-E</option>
-        <option value='3'>CPV-F</option>
-        <option value='4'>CPV-G</option>
-        <option value='5'>CPV-H</option>
-        <option value='6'>CPV-I</option>
-        <option value='7'>CPV-J</option>
+        <option value='0'>Cyber-C</option>
+        <option value='1'>Cyber-D</option>
+        <option value='2'>Cyber-E</option>
+        <option value='3'>Cyber-F</option>
+        <option value='4'>Cyber-G</option>
+        <option value='5'>Cyber-H</option>
+        <option value='6'>Cyber-I</option>
+        <option value='7'>Cyber-J</option>
+        <option value='8'>Poke-C</option>
+        <option value='9'>Poke-D</option>
+        <option value='10'>Poke-E</option>
+        <option value='11'>Poke-F</option>
+        <option value='12'>Poke-G</option>
       </select>
     </li>
     <li class='nav-item-right'>
@@ -59,14 +64,13 @@
         <option value='horizontal'>Horizontal</option>
       </select>
     </li>
+    <li class='nav-item-right' style='margin-right: 5px;'>
+      <span>Hide Transcripts</span>
+      <input id='hide' type='checkbox' checked value='transcripts' onclick='toggleHide()'>
+    </li>
   </ul>
 
-  <div class='row'>
-
-    <div class='row' id='summary'>
-      <ul id='transcripts'></ul>
-    </div>
-
+  <div class='row' id='main'>
     <div id='heatmapLegend' class='row'>
       <div style='display: inline-block; width: 10px; height: 10px; background-color: #6f1996'></div><span>Mouse</span>
       <div style='display: inline-block; width: 10px; height: 10px; background-color: #52ef99'></div><span>Eye</span>
@@ -74,14 +78,17 @@
 
     <div id='hmContainer' class='row'>
       <div class='twelve columns' id='segmentedHeatmap'></div>
-      <img id='templateImg' src='app.png'></img>
+      <img id='templateImgCPV' src='cpv-app.png'></img>
+      <img id='templateImgPV' src='pv-app.png'></img>
     </div>
 
+    <div class='row' id='summary'>
+      <ul id='transcripts' style='white-space: normal; overflow-y: scroll; height: 110px;'></ul>
+    </div>
   </div>
 
   <script>
-  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J']
-  // ids = ['CPV-C', 'CPV-D']
+  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J', 'PV-C', 'PV-D', 'PV-E', 'PV-F', 'PV-G']
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices', 'info']
 
   var dataTable = []
@@ -89,10 +96,18 @@
   var selectedSeg = null
   var selectedSummary = null
 
+  function toggleHide () {
+    var display = document.getElementById('hide').checked ? 'none' : 'block'
+    document.getElementById('summary').style.display = display
+    growth()
+  }
+
   function growth () {
     if (document.getElementById('growth').value === 'vertical') {
+      var transcriptsOff = document.getElementById('hide').checked
+      var padding = transcriptsOff ? 50 : 150
       var hmContainer = document.getElementById('hmContainer')
-      hmContainer.style.height = window.innerHeight - document.getElementById('heatmapLegend').getBoundingClientRect().bottom - 100 + 'px'
+      hmContainer.style.height = window.innerHeight - document.getElementById('heatmapLegend').getBoundingClientRect().bottom - padding + 'px'
       hmContainer.style.overflowY = 'scroll'
       hmContainer.style.overflowX = 'hidden'
       hmContainer.style.whiteSpace = 'normal'
@@ -175,6 +190,7 @@
 
   function updateSet () {
     heatmaps
+      .setType(selected.type)
       .setEyeData(selected.loadedEye)
       .setMouseData(selected.loadedMouse)
       .setSummaryInfo(selected.summary)
@@ -191,10 +207,18 @@
       var p = {}
       p.index = index
       p.id = values[index]
+      var type = (values[index].charAt(0) === 'C') ? 'CPV' : 'PV'
+      p.type = type
       d3.text('data/transcripts/' + values[index] + '.csv', function (err, inflections) {
-        p.transcripts = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
-        p.hints = parseHints(p.transcripts)
-        p.inflections = parseInflections(p.transcripts)
+        if (err) {
+          p.transcripts = [0]
+          p.hints = [0]
+          p.inflections = [0]
+        } else {
+          p.transcripts = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
+          p.hints = parseHints(p.transcripts)
+          p.inflections = parseInflections(p.transcripts)
+        }
 
         d3.text('data/eye/' + values[index] + '.csv', function(eye) {
           p.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
@@ -210,13 +234,13 @@
 
             // Bin into 30 second resolution
             var nBins = Math.ceil(p.xMax / (60 * 1000))
-            p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins)
-            p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins)
-            p.interactionTimeBin = timeBinIntoInteractions(p.loadedMouse, nBins)
+            p.eyeTimeBin = timeBinEyeData(p.loadedEye, nBins, type)
+            p.mouseTimeBin = timeBinInteractionData(p.loadedMouse, nBins, type)
+            p.interactionTimeBin = timeBinIntoInteractions(p.loadedMouse, nBins, type)
 
-            p.eSegment = segment(p.eyeTimeBin)
-            p.mSegment = segment(p.mouseTimeBin)
-            p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin)
+            p.eSegment = segment(p.eyeTimeBin, type)
+            p.mSegment = segment(p.mouseTimeBin, type)
+            p.bSegment = pairwiseSegment(p.eyeTimeBin, p.mouseTimeBin, type)
             p.testSegment = nPairBasedNoOverlap(p.interactionTimeBin, 2)
 
             dataTable.push(p)
@@ -235,5 +259,6 @@
   }
 
   loadAll(ids)
+  toggleHide()
   </script>
 </body>
