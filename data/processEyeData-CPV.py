@@ -1,5 +1,6 @@
 # RUN AS ./processEyeData-CPV.py [FILENAME] [TIMEOFFSET]
 
+# TIMEOFFSET is just the time of the first mouse interaction that happened with the associated user
 # NOTE: Trim time based on ids (offset)
 # CPV-A: 1479489115000
 # CPV-B: 1479496740000

@@ -1,0 +1,40 @@
+0,(START)
+124126,[went through all generations with fairy filter]
+125126,|5th generation|
+126126,(INFLECTION)
+195589,[went through all type withs gen 1 filter then with gen 2 filter and all types]
+196589,|Dark|
+197589,(INFLECTION)
+449622,[clicking through all types with def/atk - having to reword question - clicking through all of them again ]
+450622,|Ground|
+451622,(INFLECTION)
+748382,[swapping out X/Y axis going through all of them -- noting that there are a lot of outliers for each combination]
+749382,|Attack and HP|
+750382,(INFLECTION)
+861782,[looking at speed/hp and clicking through all the types]
+862782,|Fairy|
+863782,(INFLECTION)
+1309015,[looking at atk/spd - filtering down by generation to start with 1g* -> 2g* -> 3g -> 4g -> 5g*(using textarea for notes)]
+1310015,|rhydon- s: 40  a- 130 Sudowoodo: s-30  a-100 Escavalier: s-20 a-135|
+1311015,(INFLECTION)
+1430543,[showing all gens with speed/speed clicking through some types switched to hp/speed and began clicking through all types]
+1431543,|Flying|
+1432543,(INFLECTION)
+1528566,[repeating same strategy as 7]
+1529566,|Fighting|
+1530566,(INFLECTION)
+1869710,[looking at gen 1 visually observing with hover highlighting using actually counting them now totaling all them(textarea for notes)]
+1870710,|1: f-11 w-~31->42 2: f-10 w-18-> 28 3: f-6 w- 23->29 4: f-6 w-15-> 21 5: f-16 w-16->32 6: f-7 w-8->15  First generation|
+1871710,(INFLECTION)
+1948710,[back to strategy as 7]
+1949710,|fire|
+1950710,(INFLECTION)
+2395935,[I breifly restated the question to help with understanding it clicking through all combinations pairs keeping note of large pair sizes (textarea for notes) knows they don't have to backtrack reclicking all pairs starting clicking back through all on flying?]
+2396935,|bug-flying-12 flying-normal 18|
+2397935,(INFLECTION)
+2598134,[clicking through all types for a single one then determing there generation via hover highlight (textarea for notes)]
+2599134,|Heracross- 2nd  bug-fighting Zekrom- 5th  Dragon-electric Carbink- 6th  Fairy-rock |
+2600134,(INFLECTION)
+2732438,[visually inspecting each generation via click with hp/attack]
+2733438,|third generation|
+2734438,(END)

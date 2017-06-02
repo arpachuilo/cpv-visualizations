@@ -1,5 +1,6 @@
 # TO RUN: python processEyeData-PV.py [FILENAME] [TIMEOFFSET]
 
+# TIMEOFFSET is just the time of the first mouse interaction that happened with the associated user
 # NOTE: Trim time based on ids
 # PV-C: 1493223410994
 # PV-D: 1493845551957

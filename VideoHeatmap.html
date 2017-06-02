@@ -32,14 +32,6 @@
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>Cyber-C</option>
-        <option value='1'>Cyber-D</option>
-        <option value='2'>Cyber-E</option>
-        <option value='3'>Cyber-F</option>
-        <option value='4'>Cyber-G</option>
-        <option value='5'>Cyber-H</option>
-        <option value='6'>Cyber-I</option>
-        <option value='7'>Cyber-J</option>
       </select>
     </li>
   </ul>
@@ -58,7 +50,6 @@
 
 </body>
 <script>
-  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-G', 'CPV-I', 'CPV-J']
   var videoHeatmap = VideoHeatmap(document.getElementById('video-overlay'), document.getElementById('user-video'))
 
   var data = {}
@@ -79,9 +70,9 @@
   }
 
   function load (index) {
-    d3.text('data/eye/' + ids[index] + '.csv', function(eye) {
+    d3.text('data/eye/' + VideoHeatmapIDs[index] + '.csv', function(eye) {
       data.loadedEye = d3.csvParse('status,x,y,time,aoi\n' + eye)
-      d3.json('data/mouse/' + ids[index] + '.json', function (mouse) {
+      d3.json('data/mouse/' + VideoHeatmapIDs[index] + '.json', function (mouse) {
         data.loadedMouse = mouse
 
         document.dispatchEvent(new Event('loaded'))
@@ -89,5 +80,22 @@
     })
   }
   document.getElementById('loader').style.display = 'none'
+
+  function populateDatasetOptions (values) {
+    var list = document.getElementById('dataset')
+    for (var i = 0; i < values.length; i++) {
+      var type = values[i].split('-')[0].charAt(0) === 'C'
+        ? 'Cyber'
+        : 'Poke'
+      var code = values[i].split('-')[1]
+      var item = document.createElement('option')
+      item.value = i
+      item.innerText = type + '-' + code
+      list.appendChild(item)
+    }
+  }
+
+  populateDatasetOptions(VideoHeatmapIDs)
+
   load(0)
 </script>

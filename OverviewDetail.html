@@ -33,14 +33,6 @@
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>Cyber-C</option>
-        <option value='1'>Cyber-D</option>
-        <option value='2'>Cyber-E</option>
-        <option value='3'>Cyber-F</option>
-        <option value='4'>Cyber-G</option>
-        <option value='5'>Cyber-H</option>
-        <option value='6'>Cyber-I</option>
-        <option value='7'>Cyber-J</option>
       </select>
     </li>
     <li class='nav-item-right'>
@@ -111,8 +103,6 @@
   </div>
 
   <script>
-  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J']
-  // var ids = ['CPV-C', 'CPV-D']
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices', 'info']
 
   var bounds = false
@@ -284,7 +274,22 @@
     loadHelper(0)
   }
 
-  loadAll(ids)
+  function populateDatasetOptions (values) {
+    var list = document.getElementById('dataset')
+    for (var i = 0; i < values.length; i++) {
+      var type = values[i].split('-')[0].charAt(0) === 'C'
+        ? 'Cyber'
+        : 'Poke'
+      var code = values[i].split('-')[1]
+      var item = document.createElement('option')
+      item.value = i
+      item.innerText = type + '-' + code
+      list.appendChild(item)
+    }
+  }
+
+  populateDatasetOptions(OverviewIDs)
+  loadAll(OverviewIDs)
   drawBbox(bboxArray)
   </script>
 </body>

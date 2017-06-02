@@ -6,6 +6,7 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js'></script>
 
+  <script src='ID.js'></script>
   <script src='./scripts/util.js'></script>
   <script src='./scripts/Heatmap.js'></script>
   <script src='./scripts/timeBar.js'></script>
@@ -33,19 +34,6 @@
     <li class='nav-item-right'>
       <span>Dataset</span>
       <select class='dd' id='dataset' onchange='switchSet()'>
-        <option value='0'>Cyber-C</option>
-        <option value='1'>Cyber-D</option>
-        <option value='2'>Cyber-E</option>
-        <option value='3'>Cyber-F</option>
-        <option value='4'>Cyber-G</option>
-        <option value='5'>Cyber-H</option>
-        <option value='6'>Cyber-I</option>
-        <option value='7'>Cyber-J</option>
-        <option value='8'>Poke-C</option>
-        <option value='9'>Poke-D</option>
-        <option value='10'>Poke-E</option>
-        <option value='11'>Poke-F</option>
-        <option value='12'>Poke-G</option>
       </select>
     </li>
     <li class='nav-item-right'>
@@ -88,7 +76,6 @@
   </div>
 
   <script>
-  var ids = ['CPV-C', 'CPV-D', 'CPV-E', 'CPV-F', 'CPV-G', 'CPV-H', 'CPV-I', 'CPV-J', 'PV-C', 'PV-D', 'PV-E', 'PV-F', 'PV-G']
   var classKeys = ['overviewHist', 'detailHist', 'graph', 'table', 'offices', 'info']
 
   var dataTable = []
@@ -211,12 +198,16 @@
       p.type = type
       d3.text('data/transcripts/' + values[index] + '.csv', function (err, inflections) {
         if (err) {
-          p.transcripts = [0]
+          p.transcripts = []
           p.hints = [0]
           p.inflections = [0]
-        } else {
+        } else if (type === 'CPV') {
           p.transcripts = inflectionTimeFix(d3.csvParse('time,label\n' + inflections))
           p.hints = parseHints(p.transcripts)
+          p.inflections = parseInflections(p.transcripts)
+        } else {
+          p.transcripts = d3.csvParse('time,label\n' + inflections)
+          p.hints = [0]
           p.inflections = parseInflections(p.transcripts)
         }
 
@@ -258,7 +249,22 @@
     loadHelper(0)
   }
 
-  loadAll(ids)
+  function populateDatasetOptions (values) {
+    var list = document.getElementById('dataset')
+    for (var i = 0; i < values.length; i++) {
+      var type = values[i].split('-')[0].charAt(0) === 'C'
+        ? 'Cyber'
+        : 'Poke'
+      var code = values[i].split('-')[1]
+      var item = document.createElement('option')
+      item.value = i
+      item.innerText = type + '-' + code
+      list.appendChild(item)
+    }
+  }
+
+  populateDatasetOptions(SegmentedHeatmapIDs)
+  loadAll(SegmentedHeatmapIDs)
   toggleHide()
   </script>
 </body>
